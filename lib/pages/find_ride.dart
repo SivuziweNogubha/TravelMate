@@ -7,41 +7,6 @@ class FindRideTab extends StatefulWidget {
 }
 
 class _FindRideTabState extends State<FindRideTab> {
-  final LatLng _center = const LatLng(45.521563, -122.677433);
-  GoogleMapController? _mapController;
-  Set<Marker> _markers = {};
-
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-    _loadRideMarkers();
-  }
-
-  void _loadRideMarkers() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('lifts')
-        .where('availableSeats', isGreaterThan: 0)
-        .get();
-
-    Set<Marker> markers = {};
-    querySnapshot.docs.forEach((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      LatLng location = LatLng(data['latitude'], data['longitude']);
-      markers.add(
-        Marker(
-          markerId: MarkerId(doc.id),
-          position: location,
-          infoWindow: InfoWindow(
-            title: data['destination'],
-            snippet: 'Available Seats: ${data['availableSeats']}',
-          ),
-        ),
-      );
-    });
-
-    setState(() {
-      _markers = markers;
-    });
-  }
   final _destinationController = TextEditingController();
   DateTime? _dateTime;
 
@@ -129,11 +94,11 @@ class _FindRideTabState extends State<FindRideTab> {
                   itemBuilder: (BuildContext context, int index) {
                     final ride = availableRides[index].data() as Map<String, dynamic>;
                     return ListTile(
-                      title: Text(ride['destination']),
+                      title: Text(ride['destinationLoaction']),
                       subtitle: Text(
-                        'Departure: ${ride['departureLocation']} on ${ride['dateTime'].toDate()}',
+                        'Departure: ${ride['departureLoaction']} on ${ride['departureDateTime']}',
                       ),
-                      trailing: Text('Available Seats: ${ride['availableSeats']}'),
+                      trailing: Text('Available Seats: ${ride['availableSeats'].toString()}'),
                       onTap: () {
                         // Navigate to ride details or booking screen
                       },
@@ -155,8 +120,8 @@ class _FindRideTabState extends State<FindRideTab> {
     if (destination.isNotEmpty && dateTime != null) {
       return FirebaseFirestore.instance
           .collection('lifts')
-          .where('destination', isEqualTo: destination)
-          .where('dateTime', isGreaterThanOrEqualTo: dateTime)
+          .where('destinationLocation', isEqualTo: destination)
+          .where('departureDateTime', isGreaterThanOrEqualTo: dateTime)
           .where('availableSeats', isGreaterThan: 0)
           .snapshots();
     } else {

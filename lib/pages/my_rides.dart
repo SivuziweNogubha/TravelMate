@@ -62,9 +62,9 @@ class OfferedRidesView extends StatelessWidget {
             Map<String, dynamic> data =
             document.data()! as Map<String, dynamic>;
             return ListTile(
-              title: Text(data['destination']),
+              title: Text(data['destinationLoaction']),
               subtitle: Text(
-                'Departure: ${data['departureLocation']} on ${data['dateTime'].toDate()}',
+                'Departure: ${data['departureLoaction']} on ${data['departureDateTime']}',
               ),
               // trailing: IconButton(
               //   icon: Icon(Icons.cancel),

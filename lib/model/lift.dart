@@ -2,20 +2,20 @@
 class Lift {
   final String liftId;
   final String offeredBy;
-  final String departureStreet;
-  final String departureTown;
-  final String destinationStreet;
-  final String destinationTown;
+  final String departureLocation;
+  // final String departureTown;
+  final String destinationLocation;
+  // final String destinationTown;
   final DateTime departureDateTime;
   final int availableSeats;
 
   Lift({
     required this.liftId,
     required this.offeredBy,
-    required this.departureStreet,
-    required this.departureTown,
-    required this.destinationStreet,
-    required this.destinationTown,
+    required this.departureLocation,
+    // required this.departureTown,
+    required this.destinationLocation,
+    // required this.destinationTown,
     required this.departureDateTime,
     required this.availableSeats,
   });
@@ -24,10 +24,10 @@ class Lift {
       : this(
     liftId: jsonMap['liftId'] as String,
     offeredBy: jsonMap['offeredBy'] as String,
-    departureStreet: jsonMap['departureStreet'] as String,
-    departureTown: jsonMap['departureTown'] as String,
-    destinationStreet: jsonMap['destinationStreet'] as String,
-    destinationTown: jsonMap['destinationTown'] as String,
+    departureLocation: jsonMap['departureLoaction'] as String,
+    // departureTown: jsonMap['departureTown'] as String,
+    destinationLocation: jsonMap['destinationLocation'] as String,
+    // destinationTown: jsonMap['destinationTown'] as String,
     departureDateTime: DateTime.parse(jsonMap['departureDateTime'] as String),
     availableSeats: jsonMap['availableSeats'] as int,
   );
@@ -36,10 +36,10 @@ class Lift {
     return {
       'liftId': liftId,
       'offeredBy': offeredBy,
-      'departureStreet': departureStreet,
-      'departureTown': departureTown,
-      'destinationStreet': destinationStreet,
-      'destinationTown': destinationTown,
+      'departureLoaction': departureLocation,
+      // 'departureTown': departureTown,
+      'destinationLoaction': destinationLocation,
+      // 'destinationTown': destinationTown,
       'departureDateTime': departureDateTime.toIso8601String(),
       'availableSeats': availableSeats,
     };
@@ -47,7 +47,7 @@ class Lift {
 
   @override
   String toString() {
-    return 'Lift{liftId: $liftId, offeredBy: $offeredBy, departureStreet: $departureStreet, departureTown: $departureTown,'
-      '  destinationStreet: $destinationStreet,destinationTown: $destinationTown, departureDateTime: $departureDateTime, availableSeats: $availableSeats}';
+    return 'Lift{liftId: $liftId, offeredBy: $offeredBy, departureLocation: $departureLocation,'
+      '  destinationLocation: $destinationLocation, departureDateTime: $departureDateTime, availableSeats: $availableSeats}';
   }
 }

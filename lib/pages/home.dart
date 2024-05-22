@@ -103,17 +103,16 @@ class _OfferRideTabState extends State<OfferRideTab> {
 
     if (_formKey.currentState!.validate()) {
       final user = FirebaseAuth.instance.currentUser;
-      final liftData = {
-        'offeredBy': user!.uid,
-        'departureLocation': _departureLocationController.text,
-        'destination': _destinationController.text,
-        'dateTime': _dateTime,
-        'availableSeats': _availableSeats,
-        'bookedSeats': 0,
-      };
+      final liftdata = Lift(liftId: '',
+          offeredBy:user!.uid ,
+          departureLocation: _departureLocationController.text,
+          destinationLocation: _destinationController.text,
+          departureDateTime: _dateTime ?? DateTime.now(),
+          availableSeats: _availableSeats,
+      );
 
       try {
-        await FirebaseFirestore.instance.collection('lifts').add(liftData);
+        await FirebaseFirestore.instance.collection('lifts').add(liftdata.toJson());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Ride offered successfully')),
         );
