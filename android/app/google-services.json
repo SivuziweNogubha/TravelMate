@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "461545935936",
+    "project_id": "e-hailing-94d2c",
+    "storage_bucket": "e-hailing-94d2c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461545935936:android:9c1bb32412a7ab02733ba5",
+        "android_client_info": {
+          "package_name": "za.co.wethinkcode.widgets_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "461545935936-8msiehaui9c4un9l1obqilri04kuulk3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "za.co.wethinkcode.widgets_app",
+            "certificate_hash": "728e4da43b4d72c1c4d538243b06cd78744f4af7"
+          }
+        },
+        {
+          "client_id": "461545935936-vqs3c52pira0jpgrfudqu3idlg9er1fi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsx0rKMwr7EIIjcLOd5BrTZYHG1jzhLQo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "461545935936-vqs3c52pira0jpgrfudqu3idlg9er1fi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "461545935936-8s16cclbtr7898qqs2gej80apmr2ujgp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "za.co.wethinkcode.widgetsApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,246 @@
+// import 'dart:js';
+
+import 'package:flutter/material.dart';
+import 'package:lifts_app/home_page.dart';
+import 'package:lifts_app/model/lifts_view_model.dart';
+import 'package:provider/provider.dart';
+import 'package:lifts_app/pages/find_ride.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lifts_app/pages/my_rides.dart';
+import '../model/lift.dart';
+
+import 'package:flutter/material.dart';
+
+import '../main.dart';
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _selectedIndex = 0;
+
+  static  List<Widget> _widgetOptions = <Widget>[
+    OfferRideTab(),
+    FindRideTab(),
+    MyRidesTab(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('TravelMate'),
+        centerTitle: true,
+        backgroundColor: Colors.indigo,
+      ),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Offer Ride',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Find Ride',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'My Rides',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+
+void main(){
+  runApp(
+    ChangeNotifierProvider(
+        create: (context)=> LiftsViewModel(),
+        child: MaterialApp(
+          title: 'TravelMate',
+          home: const HomePage(),
+        ),
+    )
+
+  );
+}
+
+
+
+class OfferRideTab extends StatefulWidget {
+  @override
+  _OfferRideTabState createState() => _OfferRideTabState();
+}
+
+class _OfferRideTabState extends State<OfferRideTab> {
+  final _formKey = GlobalKey<FormState>();
+  final _departureLocationController = TextEditingController();
+  final _destinationController = TextEditingController();
+  DateTime? _dateTime;
+  int _availableSeats = 1;
+  Future<void> _offerRide() async {
+
+    if (_formKey.currentState!.validate()) {
+      final user = FirebaseAuth.instance.currentUser;
+      final liftData = {
+        'offeredBy': user!.uid,
+        'departureLocation': _departureLocationController.text,
+        'destination': _destinationController.text,
+        'dateTime': _dateTime,
+        'availableSeats': _availableSeats,
+        'bookedSeats': 0,
+      };
+
+      try {
+        await FirebaseFirestore.instance.collection('lifts').add(liftData);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ride offered successfully')),
+        );
+        _resetForm();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to offer ride: $e')),
+        );
+      }
+    }
+  }
+
+  void _resetForm() {
+    _departureLocationController.clear();
+    _destinationController.clear();
+    setState(() {
+      _dateTime = null;
+      _availableSeats = 1;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: _departureLocationController,
+              decoration: InputDecoration(
+                labelText: 'Departure Location',
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter a departure location';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _destinationController,
+              decoration: InputDecoration(
+                labelText: 'Destination',
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter a destination';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 16.0),
+            Row(
+              children: [
+                Text('Date and Time:'),
+                SizedBox(width: 16.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    final pickedDateTime = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2100),
+                    );
+
+                    if (pickedDateTime != null) {
+                      final pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+
+                      if (pickedTime != null) {
+                        setState(() {
+                          _dateTime = DateTime(
+                            pickedDateTime.year,
+                            pickedDateTime.month,
+                            pickedDateTime.day,
+                            pickedTime.hour,
+                            pickedTime.minute,
+                          );
+                        });
+                      }
+                    }
+                  },
+                  child: Text(
+                    _dateTime == null
+                        ? 'Select Date and Time'
+                        : _dateTime.toString(),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.0),
+            Row(
+              children: [
+                Text('Available Seats:'),
+                SizedBox(width: 16.0),
+                DropdownButton<int>(
+                  value: _availableSeats,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _availableSeats = value;
+                      });
+                    }
+                  },
+                  items: List.generate(
+                    5,
+                        (index) => DropdownMenuItem(
+                      value: index + 1,
+                      child: Text('${index + 1}'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _offerRide,
+              child: Text('Offer Ride'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
