@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../model/BookingModel.dart';
 class FindRideTab extends StatefulWidget {
   @override
   _FindRideTabState createState() => _FindRideTabState();
@@ -92,18 +95,47 @@ class _FindRideTabState extends State<FindRideTab> {
                 return ListView.builder(
                   itemCount: availableRides.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final ride = availableRides[index].data() as Map<String, dynamic>;
+                    final ride = availableRides[index].data() as Map<
+                        String,
+                        dynamic>;
                     return ListTile(
                       title: Text(ride['destinationLoaction']),
                       subtitle: Text(
                         'Departure: ${ride['departureLoaction']} on ${ride['departureDateTime']}',
                       ),
-                      trailing: Text('Available Seats: ${ride['availableSeats'].toString()}'),
+                      trailing: Text('Available Seats: ${ride['availableSeats']
+                          .toString()}'),
                       onTap: () {
-                        // Navigate to ride details or booking screen
+                        // Show booking confirmation dialog
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Confirm Booking'),
+                              content: Text('Do you want to book this lift?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('Book'),
+                                  onPressed: () async {
+                                    Navigator.of(context).pop();
+                                    await bookLift(
+                                        ride['liftId'], ride['availableSeats']);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
+
                     );
-                  },
+                  }
                 );
               },
             ),
@@ -112,6 +144,51 @@ class _FindRideTabState extends State<FindRideTab> {
       ),
     );
   }
+
+  Future<void> bookLift(String liftId, int availableSeats) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('User not logged in');
+    }
+
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final liftRef = FirebaseFirestore.instance.collection('lifts').doc(liftId);
+        final bookingRef = FirebaseFirestore.instance.collection('bookings').doc();
+
+        final liftSnapshot = await transaction.get(liftRef);
+        if (!liftSnapshot.exists) {
+          throw Exception('Lift does not exist');
+        }
+
+        final updatedAvailableSeats = availableSeats - 1;
+        if (updatedAvailableSeats < 0) {
+          throw Exception('No available seats');
+        }
+
+        final booking = Booking(
+          bookingId: bookingRef.id,
+          userId: user.uid,
+          liftId: liftId,
+          confirmed: true,
+        );
+
+        transaction.update(liftRef, {'availableSeats': updatedAvailableSeats});
+        transaction.set(bookingRef, booking.toJson());
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lift booked successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to book lift: $e')),
+      );
+    }
+  }
+
+
 
   Stream<QuerySnapshot> _getAvailableRidesStream() {
     final destination = _destinationController.text.trim().toLowerCase();

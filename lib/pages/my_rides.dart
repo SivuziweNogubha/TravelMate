@@ -66,12 +66,6 @@ class OfferedRidesView extends StatelessWidget {
               subtitle: Text(
                 'Departure: ${data['departureLoaction']} on ${data['departureDateTime']}',
               ),
-              // trailing: IconButton(
-              //   icon: Icon(Icons.cancel),
-              //   onPressed: () {
-              //     // Cancel or delete the offered ride
-              //   },
-              // ),
               trailing: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () {

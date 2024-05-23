@@ -37,7 +37,6 @@ class UserModel {
       // 'vehicleModel': vehicleModel,
       // 'insuranceInfo': insuranceInfo,
 
-
     };
   }
 }
