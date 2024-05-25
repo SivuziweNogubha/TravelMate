@@ -1,6 +1,8 @@
 // import 'dart:js';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lifts_app/home_page.dart';
 import 'package:lifts_app/model/lifts_view_model.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifts_app/pages/my_rides.dart';
 import '../model/lift.dart';
+import 'package:lifts_app/pages/login_screen.dart';
 
 import 'package:flutter/material.dart';
 
@@ -25,6 +28,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
 
   static  List<Widget> _widgetOptions = <Widget>[
     OfferRideTab(),
@@ -45,7 +50,33 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('TravelMate'),
         centerTitle: true,
         backgroundColor: Colors.indigo,
+        actions: [
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 16, 0),
+            child: InkWell(
+              splashColor: Colors.transparent,
+              focusColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onTap: () async {
+                await googleSignIn.signOut();
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => login_screen()),
+                );
+              },
+              child: Icon(
+                Icons.logout,
+                color: Theme.of(context).primaryIconTheme.color,
+                size: 30,
+              ),
+            ),
+          ),
+        ],
       ),
+
+
+
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),

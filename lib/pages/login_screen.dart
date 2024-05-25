@@ -200,13 +200,17 @@
 //   }
 // }
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:lifts_app/home_page.dart';
 import 'package:lifts_app/pages/home.dart';
 import 'package:lifts_app/pages/registration_screen.dart';
-import 'package:lifts_app/pages/registration_screen.dart';
+import 'package:lifts_app/pages/reset_password.dart';
+import 'package:lifts_app/utils/important_constants.dart';
 
 Color primary = Color(0xff072227);
 Color secondary = Color(0xff35858B);
@@ -225,6 +229,8 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   bool _isLoading = false;
   late AnimationController _loadingController;
 
@@ -252,18 +258,69 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
       });
       try {
         await _auth.signInWithEmailAndPassword(email: email, password: password);
-        Fluttertoast.showToast(msg: "Login Successful!!");
+        Fluttertoast.showToast(
+            msg: "Login Successful!!",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home')),
         );
       } catch (e) {
-        Fluttertoast.showToast(msg: e.toString());
+        Fluttertoast.showToast(
+            msg: 'Failed to sign in.',
+             toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+        );
       } finally {
         setState(() {
           _isLoading = false;
         });
       }
+    }
+  }
+
+
+  Future<User?> signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    try {
+      await googleSignIn.signOut(); // Signing out any existing user before signing in
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential userCredential = await _auth.signInWithCredential(credential);
+
+        String uid = userCredential.user!.uid;
+        DocumentSnapshot doc = await _firestore.collection("users").doc(uid).get();
+
+        if (!doc.exists) {
+          await _firestore.collection("users").doc(uid).set({
+            "uid": uid,
+            "name": googleUser.displayName,
+            "email": googleUser.email,
+            "profilePhoto": googleUser.photoUrl ?? AppValues.defaultUserImg,
+            "cash": 0.0,
+          });
+        }
+      }
+
+      return _auth.currentUser;
+    } catch (e) {
+      throw Exception('An error occurred while signing in with Google.');
     }
   }
 
@@ -322,6 +379,7 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
         ),
       ),
     );
+
 
     final loginButton = Material(
       elevation: 4,
@@ -403,7 +461,33 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
                         ),
 
 
-                      ],
+
+
+
+
+
+                ],
+                    ),
+                    Text(
+                      '',
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ResetPasswordPage())
+                        );
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          decoration: TextDecoration.none,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Aeonik',
+                        ),
+                      ),
                     ),
                     Text(
                       '',
@@ -419,18 +503,54 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.grey[200],
+                        //     borderRadius: BorderRadius.circular(10.0),
+                        //   ),
+                        //   padding: const EdgeInsets.all(10.0),
+                        //   child: const FaIcon(
+                        //     FontAwesomeIcons.google,
+                        //     color: Color.fromARGB(255, 12, 12, 12),
+                        //     size: 18,
+                        //   ),
+                        // ),
+
+
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           padding: const EdgeInsets.all(10.0),
-                          child: const FaIcon(
-                            FontAwesomeIcons.google,
-                            color: Color.fromARGB(255, 12, 12, 12),
-                            size: 18,
+                          child: InkWell(
+                            onTap: () async {
+                              User? user = await signInWithGoogle();
+                              if (user != null) {
+                                // Handle successful sign-in
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Sign in successful: ${user.displayName}')),
+                                );
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => HomePage())
+                                );
+                              } else {
+                                // Handle sign-in failure
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Sign in failed')),
+                                );
+                              }
+                            },
+                            child: const FaIcon(
+                              FontAwesomeIcons.google,
+                              color: Color.fromARGB(255, 12, 12, 12),
+                              size: 18,
+                            ),
                           ),
                         ),
+
+
                         const SizedBox(width: 10),
                         Container(
                           decoration: BoxDecoration(

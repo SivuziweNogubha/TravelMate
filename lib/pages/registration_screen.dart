@@ -41,6 +41,10 @@ class _registration_screenState extends State<registration_screen> {
   final TextEditingController confirmPasswordEditingController =
   new TextEditingController();
 
+  bool _isLoading = false;
+  late AnimationController _loadingController;
+
+
   @override
   Widget build(BuildContext context) {
     // Creating Form Fields
@@ -282,6 +286,9 @@ class _registration_screenState extends State<registration_screen> {
 
   void signUp(String email, String password) async {
     if (_formKey.currentState!.validate()) {
+      // setState(() {
+      //   _isLoading = true;
+      // });
       switch (_selectedType){
         case RegistrationType.user:
           await _registerAsUser(email, password);

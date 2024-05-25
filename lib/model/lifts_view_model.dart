@@ -30,6 +30,7 @@ class LiftsViewModel extends ChangeNotifier {
   }
 
 
+
   void updateLift(Lift updatedLift) {
     int index = _lifts.indexWhere((lift) => lift.liftId == updatedLift.liftId);
     if (index != -1) {
