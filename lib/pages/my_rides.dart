@@ -89,61 +89,128 @@ class OfferedRidesView extends StatelessWidget {
   }
 }
 
+// class JoinedRidesView extends StatelessWidget {
+//   final _firestore = FirebaseFirestore.instance;
+//   final _auth = FirebaseAuth.instance;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Expanded(
+//       child: StreamBuilder<QuerySnapshot>(
+//         stream: getUserLifts(FirebaseAuth.instance.currentUser!.uid),
+//         builder: (context, snapshot) {
+//           if (!snapshot.hasData) {
+//             return CircularProgressIndicator();
+//           }
+//
+//           final lifts = snapshot.data!.docs;
+//
+//           return ListView.builder(
+//             itemCount: lifts.length,
+//             itemBuilder: (context, index) {
+//               final lift = lifts[index];
+//
+//               return ListTile(
+//                 title: Text(lift['destinationLoaction']),
+//                 subtitle: Text('Departure: ${lift['departureLoaction']} on ${lift['departureDateTime']}'),
+//                 trailing: IconButton(
+//                   icon: Icon(Icons.cancel),
+//                   onPressed: () async{
+//                     String lift_id = lift.id;
+//                     String userId = FirebaseAuth.instance.currentUser!.uid;
+//                     await cancelLift(lift_id, userId);
+//                   },
+//                 ),
+//               );
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
 class JoinedRidesView extends StatelessWidget {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
-          .collection('bookings')
-          .where('passengerId', isEqualTo: _auth.currentUser!.uid)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
+    return Expanded(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: getUserLifts(FirebaseAuth.instance.currentUser!.uid),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        }
+          final lifts = snapshot.data!.docs;
 
-        return ListView(
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            Map<String, dynamic> data =
-            document.data()! as Map<String, dynamic>;
-            return FutureBuilder<DocumentSnapshot>(
-              future: _firestore.doc(data['liftId']).get(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshotLift) {
-                if (snapshotLift.hasError) {
-                  return Text('Error: ${snapshotLift.error}');
-                }
+          return ListView.builder(
+            itemCount: lifts.length,
+            itemBuilder: (context, index) {
+              final lift = lifts[index];
 
-                if (snapshotLift.connectionState == ConnectionState.done) {
-                  Map<String, dynamic> liftData =
-                  snapshotLift.data!.data() as Map<String, dynamic>;
-                  return ListTile(
-                    title: Text(liftData['destination']),
-                    subtitle: Text(
-                      'Departure: ${liftData['departureLocation']} on ${liftData['dateTime'].toDate()}',
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.cancel),
-                      onPressed: () {
-                        // Cancel the joined ride
-                      },
-                    ),
-                  );
-                }
+              return ListTile(
+                title: Text(lift['destinationLoaction']),
+                subtitle: Text('Departure: ${lift['departureLoaction']} on ${lift['departureDateTime']}'),
+                trailing: IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    _showCancelDialog(context, lift.id);
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
 
-                return CircularProgressIndicator();
+  void _showCancelDialog(BuildContext context, String liftId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cancel Lift'),
+          content: Text('Are you sure you want to cancel this lift?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
-            );
-          }).toList(),
+            ),
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                String userId = FirebaseAuth.instance.currentUser!.uid;
+                await cancelLift(liftId, userId);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
       },
     );
   }
+  Stream<QuerySnapshot> getUserLifts(String userId) {
+    return FirebaseFirestore.instance
+        .collection('lifts')
+        .where('passengers', arrayContains: userId)
+        .snapshots();
+  }
+
+  Future<void> cancelLift(String liftId, String userId) async {
+    DocumentReference liftDoc = FirebaseFirestore.instance.collection('lifts').doc(liftId);
+
+    await liftDoc.update({
+      'passengers': FieldValue.arrayRemove([userId])
+    });
+
+    await liftDoc.update({
+      'availableSeats': FieldValue.increment(1)
+    });
+  }
+
+
 }

@@ -8,6 +8,8 @@ class Lift {
   // final String destinationTown;
   final DateTime departureDateTime;
   final int availableSeats;
+  List<String> passengers;
+
 
   Lift({
     required this.liftId,
@@ -16,6 +18,7 @@ class Lift {
     required this.destinationLocation,
     required this.departureDateTime,
     required this.availableSeats,
+    this.passengers = const [],
   });
 
   Lift.fromJson(Map<String, Object?> jsonMap)
@@ -26,6 +29,7 @@ class Lift {
     destinationLocation: jsonMap['destinationLocation'] as String,
     departureDateTime: DateTime.parse(jsonMap['departureDateTime'] as String),
     availableSeats: jsonMap['availableSeats'] as int,
+    passengers: jsonMap['availableSeats'] as List<String>,
   );
 
   Map<String, Object?> toJson() {
@@ -36,12 +40,13 @@ class Lift {
       'destinationLoaction': destinationLocation,
       'departureDateTime': departureDateTime.toIso8601String(),
       'availableSeats': availableSeats,
+      'passengers': passengers,
     };
   }
 
   @override
   String toString() {
     return 'Lift{liftId: $liftId, offeredBy: $offeredBy, departureLocation: $departureLocation,'
-      '  destinationLocation: $destinationLocation, departureDateTime: $departureDateTime, availableSeats: $availableSeats}';
+      '  destinationLocation: $destinationLocation, departureDateTime: $departureDateTime, availableSeats: $availableSeats,passengers:$passengers}';
   }
 }

@@ -29,7 +29,7 @@ class OfferedRidesTab extends StatelessWidget {
             return ListTile(
               title: Text(data['destination']),
               subtitle: Text(
-                  'Departure: ${data['departureLocation']} on ${data['dateTime'].toDate()}'),
+                  'Departure: ${data['departureLocation']} on ${data['dateTime']}'),
               trailing: IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {

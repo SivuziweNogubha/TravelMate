@@ -26,8 +26,8 @@ class _splash_screenState extends State<splash_screen> {
         body: Center(
           child: Image(
             image: AssetImage("assets/logo.png"),
-            width: 105,
-            height: 105,
+            width: 300,
+            height: 300,
           ),
         ));
   }

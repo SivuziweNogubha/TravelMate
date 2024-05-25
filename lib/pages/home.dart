@@ -176,31 +176,78 @@ class _OfferRideTabState extends State<OfferRideTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextFormField(
+            // TextFormField(
+            //   controller: _departureLocationController,
+            //   decoration: InputDecoration(
+            //     labelText: 'Departure Location',
+            //   ),
+            //   validator: (value) {
+            //     if (value!.isEmpty) {
+            //       return 'Please enter a departure location';
+            //     }
+            //     return null;
+            //   },
+            // ),
+              TextFormField(
+              autofocus: false,
               controller: _departureLocationController,
-              decoration: InputDecoration(
-                labelText: 'Departure Location',
-              ),
               validator: (value) {
                 if (value!.isEmpty) {
-                  return 'Please enter a departure location';
-                }
-                return null;
+                      return 'Please enter a departure location';
+                    }
+                    return null;
               },
+              onSaved: (value) {
+                _departureLocationController.text = value!;
+              },
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.location_pin),
+                contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                hintText: "Your location",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            // TextFormField(
+            //   controller: _destinationController,
+            //   decoration: InputDecoration(
+            //     labelText: 'Destination',
+            //   ),
+            //   validator: (value) {
+            //     if (value!.isEmpty) {
+            //       return 'Please enter a destination';
+            //     }
+            //     return null;
+            //   },
+            // ),
+            Text(''
             ),
             TextFormField(
+              autofocus: false,
               controller: _destinationController,
-              decoration: InputDecoration(
-                labelText: 'Destination',
-              ),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter a destination';
                 }
                 return null;
               },
+              onSaved: (value) {
+                _destinationController.text = value!;
+              },
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.location_pin),
+                contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                hintText: "Where to?",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             ),
             SizedBox(height: 16.0),
+
             Row(
               children: [
                 Text('Date and Time:'),

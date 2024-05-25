@@ -418,8 +418,8 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
                       height: 200,
                       child: Image.asset(
                         "assets/logo.png",
-                        width: 90,
-                        height: 90,
+                        width: 300,
+                        height: 300,
                         fit: BoxFit.contain,
                       ),
                     ),

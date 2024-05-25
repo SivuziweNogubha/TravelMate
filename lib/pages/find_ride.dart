@@ -20,10 +20,32 @@ class _FindRideTabState extends State<FindRideTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // TextFormField(
+          //   controller: _destinationController,
+          //   decoration: InputDecoration(
+          //     labelText: 'Destination',
+          //   ),
+          // ),
           TextFormField(
+            autofocus: false,
             controller: _destinationController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please enter a destination';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              _destinationController.text = value!;
+            },
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(
-              labelText: 'Destination',
+              prefixIcon: Icon(Icons.location_pin),
+              contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+              hintText: "Where to?",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
           SizedBox(height: 16.0),
@@ -98,6 +120,7 @@ class _FindRideTabState extends State<FindRideTab> {
                     final ride = availableRides[index].data() as Map<
                         String,
                         dynamic>;
+                    final liftId = availableRides[index].id;
                     return ListTile(
                       title: Text(ride['destinationLoaction']),
                       subtitle: Text(
@@ -124,8 +147,12 @@ class _FindRideTabState extends State<FindRideTab> {
                                   child: Text('Book'),
                                   onPressed: () async {
                                     Navigator.of(context).pop();
-                                    await bookLift(
-                                        ride['liftId'], ride['availableSeats']);
+                                    String mylift = liftId;
+                                    String userId = FirebaseAuth.instance.currentUser!.uid;
+                                    await joinLift(liftId, userId);
+
+                                    // await bookLift(
+                                    //     ride['liftId'], ride['availableSeats']);
                                   },
                                 ),
                               ],
@@ -188,26 +215,44 @@ class _FindRideTabState extends State<FindRideTab> {
     }
   }
 
+  Future<void> joinLift(String liftId, String userId) async {
+    DocumentReference liftDoc = FirebaseFirestore.instance.collection('lifts').doc(liftId);
 
+    await liftDoc.update({
+      'passengers': FieldValue.arrayUnion([userId])
+    });
+
+    await liftDoc.update({
+      'availableSeats': FieldValue.increment(-1)
+    });
+  }
+
+
+
+
+  // Stream<QuerySnapshot> _getAvailableRidesStream() {
+  //   final destination = _destinationController.text.trim().toLowerCase();
+  //   final dateTime = _dateTime;
+  //
+  //   if (destination.isNotEmpty && dateTime != null) {
+  //     return FirebaseFirestore.instance
+  //         .collection('lifts')
+  //         .where('destinationLocation', isEqualTo: destination)
+  //         .where('departureDateTime', isGreaterThanOrEqualTo: dateTime)
+  //         .where('availableSeats', isGreaterThan: 0)
+  //         .snapshots();
+  //   } else {
+  //     return FirebaseFirestore.instance
+  //         .collection('lifts')
+  //         .where('availableSeats', isGreaterThan: 0)
+  //         .snapshots();
+  //   }
+  // }
 
   Stream<QuerySnapshot> _getAvailableRidesStream() {
-    final destination = _destinationController.text.trim().toLowerCase();
-    final dateTime = _dateTime;
-
-    if (destination.isNotEmpty && dateTime != null) {
-      return FirebaseFirestore.instance
-          .collection('lifts')
-          .where('destinationLocation', isEqualTo: destination)
-          .where('departureDateTime', isGreaterThanOrEqualTo: dateTime)
-          .where('availableSeats', isGreaterThan: 0)
-          .snapshots();
-    } else {
-      return FirebaseFirestore.instance
-          .collection('lifts')
-          .where('availableSeats', isGreaterThan: 0)
-          .snapshots();
-    }
+    return FirebaseFirestore.instance.collection('lifts').snapshots();
   }
+
 
   void _searchRides() {
     setState(() {});
