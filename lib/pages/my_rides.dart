@@ -59,30 +59,69 @@ class OfferedRidesView extends StatelessWidget {
 
         return ListView(
           children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            Map<String, dynamic> data =
-            document.data()! as Map<String, dynamic>;
+            Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
             return ListTile(
               title: Text(data['destinationLoaction']),
               subtitle: Text(
                 'Departure: ${data['departureLoaction']} on ${data['departureDateTime']}',
               ),
-              trailing: IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditLiftScreen(
-                        liftId: document.id,
-                        initialLiftData: data,
-                      ),
-                    ),
-                  );
-                },
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditLiftScreen(
+                            liftId: document.id,
+                            initialLiftData: data,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.cancel),
+                    onPressed: () {
+                      _showDeleteDialog(context, document.id);
+                    },
+                  ),
+                ],
               ),
-
             );
           }).toList(),
+        );
+      },
+    );
+  }
+  Future<void> deleteLift(String liftId) async {
+    await FirebaseFirestore.instance.collection('lifts').doc(liftId).delete();
+  }
+  void _showDeleteDialog(BuildContext context, String liftId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Lift'),
+          content: Text('Are you sure you want to delete this lift?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                String userId = FirebaseAuth.instance.currentUser!.uid;
+                await deleteLift(liftId);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
       },
     );
@@ -128,6 +167,7 @@ class OfferedRidesView extends StatelessWidget {
 //       ),
 //     );
 //   }
+
 class JoinedRidesView extends StatelessWidget {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
@@ -166,6 +206,7 @@ class JoinedRidesView extends StatelessWidget {
     );
   }
 
+
   void _showCancelDialog(BuildContext context, String liftId) {
     showDialog(
       context: context,
@@ -193,6 +234,7 @@ class JoinedRidesView extends StatelessWidget {
       },
     );
   }
+
   Stream<QuerySnapshot> getUserLifts(String userId) {
     return FirebaseFirestore.instance
         .collection('lifts')
@@ -211,6 +253,9 @@ class JoinedRidesView extends StatelessWidget {
       'availableSeats': FieldValue.increment(1)
     });
   }
+
+
+
 
 
 }
