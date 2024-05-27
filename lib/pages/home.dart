@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lifts_app/home_page.dart';
 import 'package:lifts_app/model/lifts_view_model.dart';
+import 'package:lifts_app/pages/AutoSearch.dart';
 import 'package:provider/provider.dart';
 import 'package:lifts_app/pages/find_ride.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifts_app/pages/my_rides.dart';
 import '../model/lift.dart';
 import 'package:lifts_app/pages/login_screen.dart';
+import 'package:lifts_app/pages/AutoSearch.dart';
 
 import 'package:flutter/material.dart';
 
@@ -52,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.indigo,
         actions: [
           Padding(
+
             padding: EdgeInsetsDirectional.fromSTEB(0, 0, 16, 0),
             child: InkWell(
               splashColor: Colors.transparent,
@@ -176,18 +179,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // TextFormField(
-            //   controller: _departureLocationController,
-            //   decoration: InputDecoration(
-            //     labelText: 'Departure Location',
-            //   ),
-            //   validator: (value) {
-            //     if (value!.isEmpty) {
-            //       return 'Please enter a departure location';
-            //     }
-            //     return null;
-            //   },
-            // ),
+
               TextFormField(
               autofocus: false,
               controller: _departureLocationController,
@@ -210,18 +202,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
                 ),
               ),
             ),
-            // TextFormField(
-            //   controller: _destinationController,
-            //   decoration: InputDecoration(
-            //     labelText: 'Destination',
-            //   ),
-            //   validator: (value) {
-            //     if (value!.isEmpty) {
-            //       return 'Please enter a destination';
-            //     }
-            //     return null;
-            //   },
-            // ),
+
             Text(''
             ),
             TextFormField(

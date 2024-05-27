@@ -313,7 +313,7 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
             "name": googleUser.displayName,
             "email": googleUser.email,
             "profilePhoto": googleUser.photoUrl ?? AppValues.defaultUserImg,
-            "cash": 0.0,
+            "cash": 0.0
           });
         }
       }

@@ -1,12 +1,12 @@
 
 class PlacePrediction  {
-  final String? description;
+  final String description;
   final PlaceFormatting structuredFormatting;
   final String? placeId;
   final String? reference;
 
   PlacePrediction ({
-    this.description,
+    required this.description,
     required this.structuredFormatting,
     this.placeId,
     this.reference
@@ -14,7 +14,7 @@ class PlacePrediction  {
 
   factory PlacePrediction .fromJson(Map<String, dynamic> json) {
     return PlacePrediction (
-        description: json["description"],
+        description: json["description"]??'',
         structuredFormatting: PlaceFormatting .fromJson(json["structured_formatting"]),
         placeId: json["place_id"],
         reference: json["reference"]
