@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-import '../model/BookingModel.dart';
+import 'package:lifts_app/Map.dart';
 class FindRideTab extends StatefulWidget {
   @override
   _FindRideTabState createState() => _FindRideTabState();
@@ -20,12 +18,6 @@ class _FindRideTabState extends State<FindRideTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TextFormField(
-          //   controller: _destinationController,
-          //   decoration: InputDecoration(
-          //     labelText: 'Destination',
-          //   ),
-          // ),
           TextFormField(
             autofocus: false,
             controller: _destinationController,
@@ -129,7 +121,7 @@ class _FindRideTabState extends State<FindRideTab> {
                       trailing: Text('Available Seats: ${ride['availableSeats']
                           .toString()}'),
                       onTap: () {
-                        // Show booking confirmation dialog
+                        // THIS IS THE BOOKING CONFIRMATION DIALOG
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -149,7 +141,7 @@ class _FindRideTabState extends State<FindRideTab> {
                                     Navigator.of(context).pop();
                                     String mylift = liftId;
                                     String userId = FirebaseAuth.instance.currentUser!.uid;
-                                    await joinLift(liftId, userId);
+                                    await joinLift(mylift, userId);
 
                                     // await bookLift(
                                     //     ride['liftId'], ride['availableSeats']);
@@ -168,53 +160,14 @@ class _FindRideTabState extends State<FindRideTab> {
             ),
           ),
         ],
+
       ),
     );
   }
 
-  Future<void> bookLift(String liftId, int availableSeats) async {
-    final user = FirebaseAuth.instance.currentUser;
 
-    if (user == null) {
-      throw Exception('User not logged in');
-    }
-
-    try {
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        final liftRef = FirebaseFirestore.instance.collection('lifts').doc(liftId);
-        final bookingRef = FirebaseFirestore.instance.collection('bookings').doc();
-
-        final liftSnapshot = await transaction.get(liftRef);
-        if (!liftSnapshot.exists) {
-          throw Exception('Lift does not exist');
-        }
-
-        final updatedAvailableSeats = availableSeats - 1;
-        if (updatedAvailableSeats < 0) {
-          throw Exception('No available seats');
-        }
-
-        final booking = Booking(
-          bookingId: bookingRef.id,
-          userId: user.uid,
-          liftId: liftId,
-          confirmed: true,
-        );
-
-        transaction.update(liftRef, {'availableSeats': updatedAvailableSeats});
-        transaction.set(bookingRef, booking.toJson());
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lift booked successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to book lift: $e')),
-      );
-    }
-  }
-
+  //This is where i allow a user to join a lift, while also being added to the passengers list in the Lifts Collection
+  //also need to move this logic to the LIFTS VIEW MODE
   Future<void> joinLift(String liftId, String userId) async {
     DocumentReference liftDoc = FirebaseFirestore.instance.collection('lifts').doc(liftId);
 
@@ -227,28 +180,7 @@ class _FindRideTabState extends State<FindRideTab> {
     });
   }
 
-
-
-
-  // Stream<QuerySnapshot> _getAvailableRidesStream() {
-  //   final destination = _destinationController.text.trim().toLowerCase();
-  //   final dateTime = _dateTime;
-  //
-  //   if (destination.isNotEmpty && dateTime != null) {
-  //     return FirebaseFirestore.instance
-  //         .collection('lifts')
-  //         .where('destinationLocation', isEqualTo: destination)
-  //         .where('departureDateTime', isGreaterThanOrEqualTo: dateTime)
-  //         .where('availableSeats', isGreaterThan: 0)
-  //         .snapshots();
-  //   } else {
-  //     return FirebaseFirestore.instance
-  //         .collection('lifts')
-  //         .where('availableSeats', isGreaterThan: 0)
-  //         .snapshots();
-  //   }
-  // }
-
+  //This is where i query the database in firebase to stream the available rides for the user
   Stream<QuerySnapshot> _getAvailableRidesStream() {
     return FirebaseFirestore.instance.collection('lifts').snapshots();
   }

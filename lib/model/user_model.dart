@@ -19,9 +19,9 @@ class UserModel {
       email: map['email'],
       firstName: map['firstName'],
       lastName: map['lastName'],
-      // driverLicenseNumber: map['driverLicenseNumber'],
-      // vehicleModel: map['vehicleModel'],
-      // insuranceInfo: map['insuranceInfo'],
+      driverLicenseNumber: map['driverLicenseNumber'],
+      vehicleModel: map['vehicleModel'],
+      insuranceInfo: map['insuranceInfo'],
 
     );
   }
@@ -33,9 +33,9 @@ class UserModel {
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
-      // 'driverLicenseNumber': driverLicenseNumber,
-      // 'vehicleModel': vehicleModel,
-      // 'insuranceInfo': insuranceInfo,
+      'driverLicenseNumber': driverLicenseNumber,
+      'vehicleModel': vehicleModel,
+      'insuranceInfo': insuranceInfo,
 
     };
   }

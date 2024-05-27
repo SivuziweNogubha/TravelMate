@@ -96,9 +96,12 @@ class OfferedRidesView extends StatelessWidget {
       },
     );
   }
+
+  //ALSO NEED TO MOVE THIS LOGIC TO THE LIFTS VIEW MODEL
   Future<void> deleteLift(String liftId) async {
     await FirebaseFirestore.instance.collection('lifts').doc(liftId).delete();
   }
+
   void _showDeleteDialog(BuildContext context, String liftId) {
     showDialog(
       context: context,
@@ -127,47 +130,6 @@ class OfferedRidesView extends StatelessWidget {
     );
   }
 }
-
-// class JoinedRidesView extends StatelessWidget {
-//   final _firestore = FirebaseFirestore.instance;
-//   final _auth = FirebaseAuth.instance;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Expanded(
-//       child: StreamBuilder<QuerySnapshot>(
-//         stream: getUserLifts(FirebaseAuth.instance.currentUser!.uid),
-//         builder: (context, snapshot) {
-//           if (!snapshot.hasData) {
-//             return CircularProgressIndicator();
-//           }
-//
-//           final lifts = snapshot.data!.docs;
-//
-//           return ListView.builder(
-//             itemCount: lifts.length,
-//             itemBuilder: (context, index) {
-//               final lift = lifts[index];
-//
-//               return ListTile(
-//                 title: Text(lift['destinationLoaction']),
-//                 subtitle: Text('Departure: ${lift['departureLoaction']} on ${lift['departureDateTime']}'),
-//                 trailing: IconButton(
-//                   icon: Icon(Icons.cancel),
-//                   onPressed: () async{
-//                     String lift_id = lift.id;
-//                     String userId = FirebaseAuth.instance.currentUser!.uid;
-//                     await cancelLift(lift_id, userId);
-//                   },
-//                 ),
-//               );
-//             },
-//           );
-//         },
-//       ),
-//     );
-//   }
-
 class JoinedRidesView extends StatelessWidget {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
@@ -235,6 +197,8 @@ class JoinedRidesView extends StatelessWidget {
     );
   }
 
+
+  //ALSO NEED TO MOVE THIS LOGIC TO THE LIFTS VIEW MODEL
   Stream<QuerySnapshot> getUserLifts(String userId) {
     return FirebaseFirestore.instance
         .collection('lifts')
@@ -242,6 +206,8 @@ class JoinedRidesView extends StatelessWidget {
         .snapshots();
   }
 
+
+  //ALSO NEED TO MOVE THIS LOGIC TO THE LIFTS VIEW MODEL
   Future<void> cancelLift(String liftId, String userId) async {
     DocumentReference liftDoc = FirebaseFirestore.instance.collection('lifts').doc(liftId);
 

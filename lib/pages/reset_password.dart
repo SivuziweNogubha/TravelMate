@@ -12,6 +12,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+
+  //NEED TO MOVE THIS LOGIC TO THE AUTHORISATION CLASS
   Future<void> _resetPassword() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -41,21 +43,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       body: Center(
         child: Container(
           padding: EdgeInsets.all(16.0),
-          // decoration: BoxDecoration(
-          //   gradient: LinearGradient(
-          //     colors: [Colors.grey, Colors.white],
-          //     begin: Alignment.topLeft,
-          //     end: Alignment.bottomRight,
-          //   ),
-          //   borderRadius: BorderRadius.circular(10.0),
-          //   boxShadow: [
-          //     BoxShadow(
-          //       color: Colors.black.withOpacity(0.2),
-          //       blurRadius: 8.0,
-          //       offset: Offset(0, 4),
-          //     ),
-          //   ],
-          // ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -91,44 +78,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     return null;
                   },
                 ),
-            // TextFormField(
-            //       autofocus: false,
-            //       controller: _emailController,
-            //       keyboardType: TextInputType.emailAddress,
-            //       validator: (value) {
-            //         if (value!.isEmpty) {
-            //         return ("Please Enter your email id.");
-            //         }
-            //         if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
-            //         return ("Please Enter a valid Email");
-            //         }
-            //         return null;
-            //         },
-            //           onSaved: (value) {
-            //             _emailController.text = value!;
-            //           },
-            //       textInputAction: TextInputAction.next,
-            //       decoration: InputDecoration(
-            //         prefixIcon: Icon(Icons.mail),
-            //         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-            //         hintText: "Email",
-            //         border: OutlineInputBorder(
-            //           borderRadius: BorderRadius.circular(10),
-            //         ),
-            //       ),
-            //     ),
                 SizedBox(height: 16.0),
-                // ElevatedButton(
-                //   onPressed: _resetPassword,
-                //   child: Text('Reset Password'),
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor: Colors.white,
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(9.0),
-                //     ),
-                //     padding: EdgeInsets.symmetric(vertical: 12.0),
-                //   ),
-                // ),
                 Material(
                   elevation: 4,
                   borderRadius: BorderRadius.circular(30),

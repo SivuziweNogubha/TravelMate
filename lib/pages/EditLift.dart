@@ -36,7 +36,7 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
     _dateTime = widget.initialLiftData['dateTime'].toDate();
     _availableSeats = widget.initialLiftData['availableSeats'];
   }
-
+  //I NEED TO HAVE THIS LOGIC ON LIFTSVIEWMODEL
   Future<void> _updateLift() async {
     if (_formKey.currentState!.validate()) {
       final updatedLiftData = {

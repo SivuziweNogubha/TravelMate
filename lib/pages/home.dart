@@ -13,11 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifts_app/pages/my_rides.dart';
 import '../model/lift.dart';
 import 'package:lifts_app/pages/login_screen.dart';
-import 'package:lifts_app/pages/AutoSearch.dart';
-
-import 'package:flutter/material.dart';
-
-import '../main.dart';
+import 'package:lifts_app/Map.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -35,7 +31,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static  List<Widget> _widgetOptions = <Widget>[
     OfferRideTab(),
-    FindRideTab(),
+    MapSample(),
+    // FindRideTab(),
     MyRidesTab(),
   ];
 
