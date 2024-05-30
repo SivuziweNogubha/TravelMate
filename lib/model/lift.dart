@@ -1,4 +1,6 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Lift {
   final String liftId;
   final String offeredBy;
@@ -27,7 +29,7 @@ class Lift {
     offeredBy: jsonMap['offeredBy'] as String,
     departureLocation: jsonMap['departureLoaction'] as String,
     destinationLocation: jsonMap['destinationLocation'] as String,
-    departureDateTime: DateTime.parse(jsonMap['departureDateTime'] as String),
+    departureDateTime: (jsonMap['departureDateTime'] as Timestamp).toDate(),
     availableSeats: jsonMap['availableSeats'] as int,
     passengers: jsonMap['availableSeats'] as List<String>,
   );
@@ -38,7 +40,7 @@ class Lift {
       'offeredBy': offeredBy,
       'departureLoaction': departureLocation,
       'destinationLoaction': destinationLocation,
-      'departureDateTime': departureDateTime.toIso8601String(),
+      'departureDateTime': departureDateTime,
       'availableSeats': availableSeats,
       'passengers': passengers,
     };

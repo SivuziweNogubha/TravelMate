@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lifts_app/Map.dart';
+import 'package:lifts_app/repository/lifts_repository.dart';
 class FindRideTab extends StatefulWidget {
   @override
   _FindRideTabState createState() => _FindRideTabState();
@@ -257,7 +258,27 @@ class _FindRideTabState extends State<FindRideTab> {
   }
 
 
-  void _searchRides() {
+  Future<void> _searchRides() async {
+    final destination = _destinationController.text;
+    final dateTime = _dateTime;
+    final lift_repo = LiftsRepository();
+
+    if (destination.isEmpty) {
+      // Show error message for missing destination
+      return;
+    }
+
+    if (dateTime == null) {
+      // Show error message for missing date/time
+      return;
+    }
+
+    // Implement logic to fetch rides based on destination and date/time
+    // This might involve querying your Firestore or other data source
+
+    // Example (replace with your actual logic):
+    final availableRides = await lift_repo.fetchAvailableRides(destination, dateTime);
+
     setState(() {});
   }
 }

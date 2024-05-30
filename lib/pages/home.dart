@@ -157,19 +157,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
-void main(){
-  runApp(
-    ChangeNotifierProvider(
-        create: (context)=> LiftsViewModel(),
-        child: MaterialApp(
-          title: 'TravelMate',
-          home: const HomePage(),
-        ),
-    )
-
-  );
-}
+//
+// void main(){
+//   runApp(
+//     ChangeNotifierProvider(
+//         create: (context)=> LiftsViewModel(),
+//         child: MaterialApp(
+//           title: 'TravelMate',
+//           home: const HomePage(),
+//         ),
+//     )
+//
+//   );
+// }
 
 
 

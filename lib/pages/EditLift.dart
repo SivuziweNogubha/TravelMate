@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../model/lift.dart';
+import '../model/lifts_view_model.dart';
+import '../repository/lifts_repository.dart';
+
 class EditLiftScreen extends StatefulWidget {
   final String liftId;
   final Map<String, dynamic> initialLiftData;
@@ -23,43 +27,41 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
   late TextEditingController _destinationTown;
 
 
-  DateTime? _dateTime;
+  late DateTime _dateTime;
   int _availableSeats = 1;
 
   @override
   void initState() {
     super.initState();
     _departureLocationController =
-        TextEditingController(text: widget.initialLiftData['departureLocation']);
+        TextEditingController(text: widget.initialLiftData['departureLoacation']);
     _destinationController =
-        TextEditingController(text: widget.initialLiftData['destination']);
-    _dateTime = widget.initialLiftData['dateTime'].toDate();
+        TextEditingController(text: widget.initialLiftData['destinationLoaction']);
+    _dateTime = widget.initialLiftData['departureDateTime'].toDate();
     _availableSeats = widget.initialLiftData['availableSeats'];
   }
   //I NEED TO HAVE THIS LOGIC ON LIFTSVIEWMODEL
-  Future<void> _updateLift() async {
-    if (_formKey.currentState!.validate()) {
-      final updatedLiftData = {
-        'departureLocation': _departureLocationController.text,
-        'destination': _destinationController.text,
-        'dateTime': _dateTime,
-        'availableSeats': _availableSeats,
-      };
+  final _viewModel = LiftsViewModel(LiftsRepository());
 
-      try {
-        await FirebaseFirestore.instance
-            .collection('lifts')
-            .doc(widget.liftId)
-            .update(updatedLiftData);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ride updated successfully')),
-        );
-        Navigator.pop(context);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update ride: $e')),
-        );
-      }
+  Future<void> _submitUpdate() async {
+    // final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (_formKey.currentState!.validate()) {
+      final updatedLiftData = Lift( // Assuming Lift is your data structure class
+        departureLocation: _departureLocationController.text,
+        destinationLocation: _destinationController.text,
+        departureDateTime: _dateTime,
+        availableSeats: _availableSeats,
+        liftId: widget.liftId,
+        offeredBy:FirebaseAuth.instance.currentUser!.uid ,
+      );
+
+      // Call updateLift method in ViewModel
+      await _viewModel.updateLift(widget.liftId, updatedLiftData);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ride updated successfully')),
+      );
+      Navigator.pop(context);
     }
   }
 
@@ -168,7 +170,7 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: _updateLift,
+                onPressed: _submitUpdate,
                 child: Text('Update Ride'),
               ),
             ],

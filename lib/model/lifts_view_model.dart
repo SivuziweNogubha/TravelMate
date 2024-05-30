@@ -19,6 +19,16 @@ class LiftsViewModel extends ChangeNotifier {
 
   List<Lift> get lifts => _lifts;
 
+  final LiftsRepository _repository;
+
+  LiftsViewModel(this._repository);
+
+  // ... existing methods
+
+  Future<void> updateLift(String liftId, Lift updatedLift) async {
+    await _repository.updateLift(updatedLift);
+  }
+
   void addLift(Lift lift) {
     _lifts.add(lift);
     notifyListeners();
@@ -30,14 +40,14 @@ class LiftsViewModel extends ChangeNotifier {
   }
 
 
-
-  void updateLift(Lift updatedLift) {
-    int index = _lifts.indexWhere((lift) => lift.liftId == updatedLift.liftId);
-    if (index != -1) {
-      _lifts[index] = updatedLift;
-      notifyListeners();
-    }
-  }
+  //
+  // void updateLift(Lift updatedLift) {
+  //   int index = _lifts.indexWhere((lift) => lift.liftId == updatedLift.liftId);
+  //   if (index != -1) {
+  //     _lifts[index] = updatedLift;
+  //     notifyListeners();
+  //   }
+  // }
 
   void loadLifts(List<Lift> lifts) {
     _lifts = lifts;

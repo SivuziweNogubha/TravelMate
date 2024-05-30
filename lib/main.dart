@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:lifts_app/repository/lifts_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:lifts_app/model/lifts_view_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -52,7 +53,12 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => LiftsViewModel()),
+        Provider<LiftsRepository>( // Provide LiftsRepository
+          create: (context) => LiftsRepository(),
+        ),
+        ChangeNotifierProvider( // Inject LiftsRepository into LiftsViewModel
+          create: (context) => LiftsViewModel(Provider.of<LiftsRepository>(context)),
+        ),
         // Add other providers here if needed
       ],
       child: MaterialApp(

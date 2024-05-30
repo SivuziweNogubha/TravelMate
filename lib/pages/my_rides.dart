@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lifts_app/pages/EditLift.dart';
+import 'package:intl/intl.dart';
+
 class MyRidesTab extends StatefulWidget {
   @override
   _MyRidesTabState createState() => _MyRidesTabState();
@@ -121,11 +123,13 @@ class OfferedRidesView extends StatelessWidget {
         return ListView(
           children: snapshot.data!.docs.map((DocumentSnapshot document) {
             Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+            Timestamp departureTimestamp = data['departureDateTime'];
+            DateTime departureDateTime = departureTimestamp.toDate();
+            String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(departureDateTime);
+
             return ListTile(
               title: Text(data['destinationLoaction']),
-              subtitle: Text(
-                'Departure: ${data['departureLoaction']} on ${data['departureDateTime']}',
-              ),
+              subtitle: Text('Departure: ${data['departureLoaction']} on $formattedDateTime'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
