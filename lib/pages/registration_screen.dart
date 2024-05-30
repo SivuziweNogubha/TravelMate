@@ -235,7 +235,11 @@ class _registration_screenState extends State<registration_screen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_outlined),
+          icon: ImageIcon(
+            AssetImage('assets/back.png'), // Replace with your icon path
+            size: 50,
+            color: Colors.black,
+          ),
           color: primary,
           onPressed: () {
             Navigator.of(context).pop();

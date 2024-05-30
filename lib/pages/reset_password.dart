@@ -38,7 +38,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         title: Text('Reset Password'),
         // backgroundColor: Colors.indigo,
         centerTitle: true,
-        elevation: 0,
+        leading: IconButton(
+          icon: ImageIcon(
+            AssetImage('assets/back.png'), // Replace with your icon path
+            size: 50,
+            color: Colors.black,
+          ),
+          color: primary,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        // elevation: 0,
       ),
       body: Center(
         child: Container(

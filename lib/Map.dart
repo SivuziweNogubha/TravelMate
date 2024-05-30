@@ -18,7 +18,7 @@ class MapSampleState extends State<MapSample> {
 
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target:  LatLng(-26.232590, 28.240967),
     zoom: 14.4746,
   );
 
@@ -26,13 +26,13 @@ class MapSampleState extends State<MapSample> {
     markerId: MarkerId('_KGooglePlexMarker'),
     infoWindow: InfoWindow(title: 'Google Plex'),
     icon: BitmapDescriptor.defaultMarker,
-    position:  LatLng(37.42796133580664, -122.085749655962),
+    position:  LatLng(-26.2041, 28.0473),
   );
 
 
   static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
+      target:LatLng(-26.2041, 28.0473),
       tilt: 59.440717697143555,
       zoom: 19.151926040649414
   );
@@ -59,10 +59,7 @@ class MapSampleState extends State<MapSample> {
   static final Polygon _KPolygon = Polygon(
     polygonId: PolygonId('_KPolygon'),
     points: [
-      LatLng(37.42796133580664, -122.085749655962),
-      LatLng(37.43296265331129, -122.08832357078792),
-      LatLng(37.418, -122.092),
-      LatLng(37.435, -122.092),
+      LatLng(-26.2041, 28.0473),
     ],
     strokeWidth: 5,
     fillColor: Colors.transparent,
@@ -73,9 +70,6 @@ class MapSampleState extends State<MapSample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Google Maps'),
-      ),
       body: Column(
         children: [
           Row(
@@ -118,7 +112,7 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
-  Future<void> _goToTheLake() async {
+  Future<void> _goToDestination() async {
     final GoogleMapController controller = await _controller.future;
     await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }

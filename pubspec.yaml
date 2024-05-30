@@ -52,6 +52,7 @@ dependencies:
   flutter_config: ^2.0.2
   flutter_polyline_points: ^2.0.0
   android_intent: ^2.0.2
+  geolocator: ^12.0.0
 
 
 
@@ -85,6 +86,14 @@ flutter:
   assets:
     - assets/logo.png
     - assets/chevron_icon.svg
+    - assets/car_passengers.png
+    - assets/activity.png
+    - assets/passenger.png
+    - assets/logout.png
+    - assets/current_location.png
+    - assets/destination_location.png
+    - assets/back.png
+    - assets/profile.png
 
   # To add assets to your application, add an assets section, like this:
 #   assets:
