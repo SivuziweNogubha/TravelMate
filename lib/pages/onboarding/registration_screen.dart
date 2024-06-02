@@ -5,8 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lifts_app/pages/home.dart';
 
-import '../main.dart';
-import '../model/user_model.dart';
+import '../../main.dart';
+import '../../model/user_model.dart';
 
 // Defining Colors
 Color primary = Color(0xff072227);

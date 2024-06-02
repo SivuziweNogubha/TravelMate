@@ -98,5 +98,39 @@ class LiftsRepository {
       rethrow;
     }
   }
+  Future<void> deleteUserData(String userId) async {
+    try {
+      final bookingsCollection = _firestore.collection("bookings");
+      final liftsCollection = _firestore.collection("lifts");
 
+      var liftsSnapshot = await liftsCollection
+          .where("driverId", isEqualTo: userId)
+          .get();
+
+      for (var doc in liftsSnapshot.docs) {
+        if (doc["liftStatus"] == "pending") {
+          await liftsCollection.doc(doc.id).update({
+            "liftStatus": "cancelled",
+          });
+        }
+      }
+
+      var bookingsSnapshot = await _firestore
+          .collection("bookings")
+          .where("userId", isEqualTo: userId)
+          .get();
+
+      for (var doc in bookingsSnapshot.docs) {
+        var liftDoc = await liftsCollection.doc(doc["liftId"]).get();
+        if (liftDoc["liftStatus"] == "pending") {
+          await liftsCollection.doc(doc["liftId"]).update({
+            "bookedSeats": FieldValue.increment(-1),
+          });
+        }
+        await bookingsCollection.doc(doc.id).delete();
+      }
+    } catch (e) {
+      print('Error deleting user data: $e');
+    }
+  }
 }

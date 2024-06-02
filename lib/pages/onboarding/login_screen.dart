@@ -7,8 +7,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lifts_app/home_page.dart';
 import 'package:lifts_app/pages/home.dart';
-import 'package:lifts_app/pages/registration_screen.dart';
-import 'package:lifts_app/pages/reset_password.dart';
+import 'package:lifts_app/pages/onboarding/registration_screen.dart';
+import 'package:lifts_app/pages/onboarding/reset_password.dart';
 import 'package:lifts_app/utils/important_constants.dart';
 
 Color primary = Color(0xff072227);

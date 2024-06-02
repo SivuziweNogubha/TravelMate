@@ -1,15 +1,18 @@
 // Created a Model to get access to firestore to store our data
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String? uid;
   String? email;
   String? firstName;
   String? lastName;
-  String? driverLicenseNumber;
-  String? vehicleModel;
-  String? insuranceInfo;
+  final String? photoURL;
+  final double? cash;
 
 
-  UserModel({this.uid, this.email, this.firstName, this.lastName, this.driverLicenseNumber, this.vehicleModel,this.insuranceInfo
+
+
+  UserModel({this.uid, this.email, this.firstName, this.lastName, this.photoURL, this.cash
   });
 
   // receiving data from the server
@@ -19,23 +22,30 @@ class UserModel {
       email: map['email'],
       firstName: map['firstName'],
       lastName: map['lastName'],
-      driverLicenseNumber: map['driverLicenseNumber'],
-      vehicleModel: map['vehicleModel'],
-      insuranceInfo: map['insuranceInfo'],
 
+
+
+    );
+  }
+  factory UserModel.fromDocument(DocumentSnapshot doc) {
+    return UserModel(
+      uid: doc["uid"],
+      firstName: doc["firstName"],
+      lastName: doc["lastName"],
+      email: doc["email"],
+      photoURL: doc["profilePhoto"],
+      cash: doc["cash"],
     );
   }
 
 
-  Map<String,dynamic> toMap() {
+    Map<String,dynamic> toMap() {
     return {
       'uid': uid,
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
-      'driverLicenseNumber': driverLicenseNumber,
-      'vehicleModel': vehicleModel,
-      'insuranceInfo': insuranceInfo,
+
 
     };
   }

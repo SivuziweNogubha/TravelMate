@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
 // import 'package:lifts_app/model/lifts_view_model.dart';
 // import 'package:lifts_app/pages/home.dart';
-import 'package:lifts_app/pages/login_screen.dart';
+import 'package:lifts_app/pages/onboarding/login_screen.dart';
 import 'package:lifts_app/pages/splash_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';

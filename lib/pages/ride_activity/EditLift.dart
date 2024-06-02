@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../model/lift.dart';
-import '../model/lifts_view_model.dart';
-import '../repository/lifts_repository.dart';
+import '../../model/lift.dart';
+import '../../model/lifts_view_model.dart';
+import '../../repository/lifts_repository.dart';
 
 class EditLiftScreen extends StatefulWidget {
   final String liftId;

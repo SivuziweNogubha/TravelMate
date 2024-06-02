@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lifts_app/pages/login_screen.dart';
+import 'package:lifts_app/pages/onboarding/login_screen.dart';
 
 class splash_screen extends StatefulWidget {
   const splash_screen({Key? key}) : super(key: key);
