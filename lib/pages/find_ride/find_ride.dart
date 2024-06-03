@@ -218,6 +218,8 @@ import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:lifts_app/pages/widgets/loading_animation.dart';
 
+import '../../repository/lifts_repository.dart';
+
 class FindRideTab extends StatefulWidget {
   @override
   _FindRideTabState createState() => _FindRideTabState();
@@ -230,6 +232,8 @@ class _FindRideTabState extends State<FindRideTab> {
   bool _isLoading = false;
   late GoogleMapController _googleMapController;
   Position? _currentPosition;
+
+  final _liftsRepository = LiftsRepository();
 
   static const _initialCameraPosition = CameraPosition(
     target: LatLng(-26.232590, 28.240967),
@@ -290,28 +294,6 @@ class _FindRideTabState extends State<FindRideTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // TextFormField(
-                //   autofocus: false,
-                //   controller: _destinationController,
-                //   validator: (value) {
-                //     if (value!.isEmpty) {
-                //       return 'Please enter a destination';
-                //     }
-                //     return null;
-                //   },
-                //   onSaved: (value) {
-                //     _destinationController.text = value!;
-                //   },
-                //   textInputAction: TextInputAction.done,
-                //   decoration: InputDecoration(
-                //     prefixIcon: Icon(Icons.location_pin),
-                //     contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                //     hintText: "Where to?",
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(10),
-                //     ),
-                //   ),
-                // ),
                 GooglePlaceAutoCompleteTextField(
                   textEditingController: _destinationController,
                   googleAPIKey: dotenv.env['GOOGLE_CLOUD_MAP_ID']!,
@@ -449,32 +431,10 @@ class _FindRideTabState extends State<FindRideTab> {
       ],
     );
   }
-
-  Future<void> joinLift(String liftId, String userId) async {
-    DocumentReference liftDoc = FirebaseFirestore.instance.collection('lifts').doc(liftId);
-
-    await liftDoc.update({
-      'passengers': FieldValue.arrayUnion([userId])
-    });
-
-    await liftDoc.update({'availableSeats': FieldValue.increment(-1)});
-
-    DocumentReference userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
-
-    await userDoc.update({
-      'confirmedLifts': FieldValue.arrayUnion([liftId])
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Lift booked successfully')),
-    );
-  }
-
-
   void _searchRides() async {
     String destination = _destinationController.text;
     DateTime? selectedDate = _dateTime;
-    String  currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
     if (destination.isEmpty || selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -487,17 +447,20 @@ class _FindRideTabState extends State<FindRideTab> {
       _isLoading = true;
     });
 
-    Query query = FirebaseFirestore.instance.collection('lifts')
-        .where('destinationLoaction', isEqualTo: destination)
-        .where('offeredBy',isNotEqualTo: currentUserId)
-        .where('departureDateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(selectedDate))
-        .where('departureDateTime', isLessThanOrEqualTo: Timestamp.fromDate(selectedDate.add(Duration(days: 1))));
-
-    QuerySnapshot querySnapshot = await query.get();
+    List<DocumentSnapshot> results = await _liftsRepository.searchRides(destination, selectedDate, currentUserId);
 
     setState(() {
-      _searchResults = querySnapshot.docs;
+      _searchResults = results;
       _isLoading = false;
     });
   }
+
+  Future<void> joinLift(String liftId, String userId) async {
+    await _liftsRepository.joinLift(liftId, userId);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Lift booked successfully')),
+    );
+  }
+
 }

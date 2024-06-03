@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,23 +83,50 @@ class LiftsRepository {
       return [];
     }
   }
+  Future<List<DocumentSnapshot>> searchRides(
+      String destination, DateTime selectedDate, String currentUserId) async {
+    Query query = _firestore.collection('lifts')
+        .where('destinationLoaction', isEqualTo: destination)
+        .where('offeredBy',isNotEqualTo: currentUserId)
+        .where('departureDateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(selectedDate))
+        .where('departureDateTime', isLessThanOrEqualTo: Timestamp.fromDate(selectedDate.add(Duration(days: 1))));
 
-  Future<List<Lift>> searchLifts(String pickupLocation, String destinationLocation) async {
-    try {
-      var querySnapshot = await _firestore
-          .collection("lifts")
-          .where("pickupLocation", isEqualTo: pickupLocation)
-          .where("destinationLocation", isEqualTo: destinationLocation)
-          .get();
-
-      return querySnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return Lift.fromJson(data);
-      }).toList();
-    } catch (e) {
-      rethrow;
-    }
+    QuerySnapshot querySnapshot = await query.get();
+    return querySnapshot.docs;
   }
+
+  Future<void> joinLift(String liftId, String userId) async {
+    DocumentReference liftDoc = _firestore.collection('lifts').doc(liftId);
+
+    await liftDoc.update({
+      'passengers': FieldValue.arrayUnion([userId])
+    });
+
+    await liftDoc.update({'availableSeats': FieldValue.increment(-1)});
+
+    DocumentReference userDoc = _firestore.collection('users').doc(userId);
+
+    await userDoc.update({
+      'confirmedLifts': FieldValue.arrayUnion([liftId])
+    });
+  }
+
+  // Future<List<Lift>> searchLifts(String pickupLocation, String destinationLocation) async {
+  //   try {
+  //     var querySnapshot = await _firestore
+  //         .collection("lifts")
+  //         .where("pickupLocation", isEqualTo: pickupLocation)
+  //         .where("destinationLocation", isEqualTo: destinationLocation)
+  //         .get();
+  //
+  //     return querySnapshot.docs.map((doc) {
+  //       final data = doc.data() as Map<String, dynamic>;
+  //       return Lift.fromJson(data);
+  //     }).toList();
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
   Future<void> deleteUserData(String userId) async {
     try {
       final bookingsCollection = _firestore.collection("bookings");
