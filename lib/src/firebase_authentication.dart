@@ -168,4 +168,6 @@ class FirebaseAuthService {
       throw Exception('An error occurred while deleting user: $e');
     }
   }
+
+
 }

@@ -119,6 +119,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 import '../widgets/loading_animation.dart'; // Import your custom loading animation widget
 
@@ -128,8 +130,6 @@ class JoinedRidesView extends StatefulWidget {
 }
 
 class _JoinedRidesViewState extends State<JoinedRidesView> {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
   bool _isLoading = true;
 
   @override
@@ -147,60 +147,65 @@ class _JoinedRidesViewState extends State<JoinedRidesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: StreamBuilder<QuerySnapshot>(
-        stream: getUserLifts(FirebaseAuth.instance.currentUser!.uid),
-        builder: (context, snapshot) {
-          // if (!snapshot.hasData) {
-          //   if (_isLoading) {
-          //     return CustomLoadingAnimation(
-          //       animationPath: 'assets/animations/loading.json',
-          //       height: 200,
-          //       width: 200,
-          //     ); // Show custom loading animation
-          //   } else {
-          //     return CustomLoadingAnimation(
-          //       animationPath: 'assets/animations/no_data.json',
-          //       height: 200,
-          //       width: 200,
-          //     );
-          //   }
-          // }
-          if (_isLoading) {
-            return CustomLoadingAnimation(
-                    animationPath: 'assets/animations/loading.json',
-                    height: 200,
-                    width: 200,
-                  ); // Sh
-          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return CustomLoadingAnimation(
-                    animationPath: 'assets/animations/no_data.json',
-                    height: 200,
-                    width: 200,
-                  );
-          }
 
-          final lifts = snapshot.data!.docs;
+    return StreamBuilder<QuerySnapshot>(
+      stream: getUserLifts(FirebaseAuth.instance.currentUser!.uid),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+          _isLoading = false;
+          return ListView(
+            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+              Timestamp departureTimestamp = data['departureDateTime'];
+              DateTime departureDateTime = departureTimestamp.toDate();
+              String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(departureDateTime);
 
-          return ListView.builder(
-            itemCount: lifts.length,
-            itemBuilder: (context, index) {
-              final lift = lifts[index];
-
-              return ListTile(
-                title: Text(lift['destinationLoaction']),
-                subtitle: Text('Departure: ${lift['departureLoaction']} on ${lift['departureDateTime']}'),
-                trailing: IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    _showCancelDialog(context, lift.id);
-                  },
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ListTile(
+                  title: Text(data['destinationLoaction']),
+                  subtitle: Text('Departure: ${data['departureLoaction']} on $formattedDateTime'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: ImageIcon(
+                          AssetImage('assets/icons/delete.png'),
+                          size: 30, // Adjust size as needed
+                        ),
+                        onPressed: () {
+                          _showCancelDialog(context, document.id);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               );
-            },
+            }).toList(),
           );
-        },
-      ),
+        } else {
+          if (_isLoading) {
+            return CustomLoadingAnimation(
+              animationPath: 'assets/animations/loading.json',
+              width: 200,
+              height: 200,
+            );
+
+          } else {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomLoadingAnimation(
+                  animationPath: 'assets/animations/no_data.json',
+                  width: 200,
+                  height: 200,
+                ), // Show custom animation for no data
+                SizedBox(height: 20),
+              ],
+            );
+          }
+        }
+      },
     );
   }
 

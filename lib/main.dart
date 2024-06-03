@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 // import 'package:provider/provider.dart';
 // import 'package:lifts_app/model/lifts_view_model.dart';
 // import 'package:lifts_app/pages/home.dart';
@@ -46,6 +47,10 @@ class pallette {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "./.env");
+
+  print('Environment variables loaded: ${dotenv.env}');
+
   // await GoogleMaps.init();
   await Firebase.initializeApp();
 

@@ -62,7 +62,7 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                       IconButton(
                         icon: ImageIcon(
                           AssetImage('assets/icons/delete.png'),
-                          size: 20, // Adjust size as needed
+                          size: 30, // Adjust size as needed
                         ),
                         onPressed: () {
                           _showDeleteDialog(context, document.id);
@@ -77,10 +77,11 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
         } else {
           if (_isLoading) {
             return CustomLoadingAnimation(
-              animationPath: 'assets/animations/loading.json',
-              width: 100,
-              height: 100,
-            ); // Show custom loading animation
+              animationPath: 'assets/animations/no_data.json',
+              width: 200,
+              height: 200,
+            );
+
           } else {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +92,6 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                   height: 200,
                 ), // Show custom animation for no data
                 SizedBox(height: 20),
-                Text('No data available'),
               ],
             );
           }

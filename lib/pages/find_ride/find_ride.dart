@@ -210,9 +210,11 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:lifts_app/pages/widgets/loading_animation.dart';
 
@@ -288,27 +290,50 @@ class _FindRideTabState extends State<FindRideTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextFormField(
-                  autofocus: false,
-                  controller: _destinationController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a destination';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _destinationController.text = value!;
-                  },
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.location_pin),
+                // TextFormField(
+                //   autofocus: false,
+                //   controller: _destinationController,
+                //   validator: (value) {
+                //     if (value!.isEmpty) {
+                //       return 'Please enter a destination';
+                //     }
+                //     return null;
+                //   },
+                //   onSaved: (value) {
+                //     _destinationController.text = value!;
+                //   },
+                //   textInputAction: TextInputAction.done,
+                //   decoration: InputDecoration(
+                //     prefixIcon: Icon(Icons.location_pin),
+                //     contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                //     hintText: "Where to?",
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //   ),
+                // ),
+                GooglePlaceAutoCompleteTextField(
+                  textEditingController: _destinationController,
+                  googleAPIKey: dotenv.env['GOOGLE_CLOUD_MAP_ID']!,
+                  inputDecoration: InputDecoration(
+                    prefixIcon: ImageIcon(
+                      AssetImage('assets/current_location.png'),
+                      size: 5,
+                    ),
                     contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                     hintText: "Where to?",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  countries: ["za"], // Specify your country code
+                  isLatLngRequired: true,
+                  getPlaceDetailWithLatLng: (prediction) {
+                    print("placeDetails: ${prediction.lng}");
+                  },
+                  itemClick: (prediction) {
+                    _destinationController.text = prediction.description!;
+                  },
                 ),
                 SizedBox(height: 16.0),
                 Row(
@@ -449,6 +474,7 @@ class _FindRideTabState extends State<FindRideTab> {
   void _searchRides() async {
     String destination = _destinationController.text;
     DateTime? selectedDate = _dateTime;
+    String  currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
     if (destination.isEmpty || selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -463,6 +489,7 @@ class _FindRideTabState extends State<FindRideTab> {
 
     Query query = FirebaseFirestore.instance.collection('lifts')
         .where('destinationLoaction', isEqualTo: destination)
+        .where('offeredBy',isNotEqualTo: currentUserId)
         .where('departureDateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(selectedDate))
         .where('departureDateTime', isLessThanOrEqualTo: Timestamp.fromDate(selectedDate.add(Duration(days: 1))));
 

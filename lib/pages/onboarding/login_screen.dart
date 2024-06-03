@@ -11,6 +11,8 @@ import 'package:lifts_app/pages/onboarding/registration_screen.dart';
 import 'package:lifts_app/pages/onboarding/reset_password.dart';
 import 'package:lifts_app/utils/important_constants.dart';
 
+import '../../model/user_model.dart';
+
 Color primary = Color(0xff072227);
 Color secondary = Color(0xff35858B);
 Color primaryLight = Color(0xff4FBDBA);
@@ -56,7 +58,9 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
         _isLoading = true;
       });
       try {
-        await _auth.signInWithEmailAndPassword(email: email, password: password);
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
+        UserModel userModel = UserModel.fromDocument(userDoc);
         Fluttertoast.showToast(
             msg: "Login Successful!!",
             toastLength: Toast.LENGTH_LONG,
@@ -66,7 +70,8 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home')),
+          MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home'
+          ,userModel: userModel,)),
         );
       } catch (e) {
         Fluttertoast.showToast(

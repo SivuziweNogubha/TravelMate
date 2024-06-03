@@ -6,14 +6,10 @@ class UserModel {
   String? email;
   String? firstName;
   String? lastName;
-  final String? photoURL;
-  final double? cash;
+  String? photoURL; // Added photoURL field
+  double? cash;
 
-
-
-
-  UserModel({this.uid, this.email, this.firstName, this.lastName, this.photoURL, this.cash
-  });
+  UserModel({this.uid, this.email, this.firstName, this.lastName, this.photoURL, this.cash});
 
   // receiving data from the server
   factory UserModel.fromMap(map) {
@@ -22,31 +18,30 @@ class UserModel {
       email: map['email'],
       firstName: map['firstName'],
       lastName: map['lastName'],
-
-
-
+      photoURL: map['photoURL'], // Updated to include photoURL
+      cash: map['cash'],
     );
   }
+
   factory UserModel.fromDocument(DocumentSnapshot doc) {
     return UserModel(
       uid: doc["uid"],
       firstName: doc["firstName"],
       lastName: doc["lastName"],
       email: doc["email"],
-      photoURL: doc["profilePhoto"],
+      photoURL: doc["photoURL"], // Updated to include photoURL
       cash: doc["cash"],
     );
   }
 
-
-    Map<String,dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'uid': uid,
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
-
-
+      'photoURL': photoURL, // Updated to include photoURL
+      'cash': cash,
     };
   }
 }
