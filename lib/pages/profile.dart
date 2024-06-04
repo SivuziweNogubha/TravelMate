@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lifts_app/view_models/profile_view_model.dart';
 
 import 'onboarding/login_screen.dart';
 
@@ -33,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // Upload the image to Firebase Storage
       print('User UID: ${widget.uid}');
 
-      // Verify the Firebase Storage bucket location
+      //My storage Bucket at firestore
       Reference storageReference = FirebaseStorage.instance
           .refFromURL('gs://e-hailing-94d2c.appspot.com')
           .child('profile_images/${widget.uid}');
@@ -189,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Colors.blue, // Use your primary color here
                     child: MaterialButton(
                       onPressed: () {
-                        _showLogoutDialog(context);
+                        _showLogoutDialog(context,widget.uid);
                       },
                       padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                       minWidth: MediaQuery.of(context).size.width,
@@ -210,7 +211,10 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+
+
+  void _showLogoutDialog(BuildContext context,String uid) {
+    ProfileViewModel model = ProfileViewModel(uid);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -226,7 +230,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             TextButton(
               onPressed: () {
-                FirebaseAuth.instance.signOut();
+                model.signOut();
+                // FirebaseAuth.instance.signOut();
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => login_screen()),
                 ); // Logout
@@ -238,4 +243,6 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+
+
 }
