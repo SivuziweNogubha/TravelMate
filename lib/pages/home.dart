@@ -53,29 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('TravelMate'),
         centerTitle: true,
         backgroundColor: Colors.indigo,
-        actions: [
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 16, 0),
-            child: InkWell(
-              splashColor: Colors.transparent,
-              focusColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onTap: () async {
-                await googleSignIn.signOut();
-                await FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => login_screen()),
-                );
-              },
-              child: ImageIcon(
-                AssetImage('assets/logout.png'), // Replace with your icon path
-                size: 30,
-                color: Theme.of(context).primaryIconTheme.color,
-              ),
-            ),
-          ),
-        ],
       ),
 
 
