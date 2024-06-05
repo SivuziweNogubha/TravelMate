@@ -6,8 +6,11 @@ import 'package:lifts_app/pages/ride_activity/my_rides.dart';
 import 'package:lifts_app/pages/find_ride/find_ride.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifts_app/pages/onboarding/login_screen.dart';
+import '../dummy.dart';
 import '../model/user_model.dart';
 import 'offer_ride/offer_ride.dart';
+import 'package:flutter_svg/svg.dart';
+
 
 // class MyHomePage extends StatefulWidget {
 //   const MyHomePage({super.key, required this.title});
@@ -45,14 +48,55 @@ class _MyHomePageState extends State<MyHomePage> {
     final List<Widget> _widgetOptions = [
       OfferRideTab(),
       FindRideTab(),
-      MyRidesTab(),
+      // MyRidesTab(),
       ProfilePage(uid: uid,),
+      ProfileScreen(),
     ];
     return Scaffold(
       appBar: AppBar(
         title: const Text('TravelMate'),
         centerTitle: true,
         backgroundColor: Colors.indigo,
+          elevation: 0,
+          // actions: [
+          //   GestureDetector(
+          //       onTap: () {
+          //         Navigator.push(
+          //             context,
+          //             MaterialPageRoute(builder: (_) => const ChatsScreen())
+          //         );
+          //       },
+          //       child: Container(
+          //         height: 30,
+          //         width: 30,
+          //         margin: const EdgeInsets.only(right: 15),
+          //         child: SvgPicture.asset(
+          //           'assets/icons/chat_icon.svg',
+          //         ),
+          //       )
+          //   )
+          // ],
+          // leading: GestureDetector(
+          //   onTap: () {
+          //     Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (_) => const ProfileScreen())
+          //     );
+          //   },
+          //   child: Container(
+          //     width: 10,
+          //     height: 10,
+          //     margin: const EdgeInsets.only(left: 13, top: 8, bottom: 8),
+          //     decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       // image: DecorationImage(
+          //       //   image: NetworkImage(userPhotoUrl ?? AppValues.defaultUserImg),
+          //       //   fit: BoxFit.cover,
+          //       // ),
+          //     ),
+          //   ),
+          // )
+
       ),
 
 
