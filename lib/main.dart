@@ -14,6 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:lifts_app/model/lifts_view_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'model/user_provider.dart';
+
 
 
 
@@ -64,6 +66,7 @@ Future<void> main() async {
         ChangeNotifierProvider( // Inject LiftsRepository into LiftsViewModel
           create: (context) => LiftsViewModel(Provider.of<LiftsRepository>(context)),
         ),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
         // Add other providers here if needed
       ],
       child: MaterialApp(

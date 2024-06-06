@@ -58,7 +58,6 @@ dependencies:
   image_picker: ^1.1.2
   firebase_storage: ^11.7.7
   datetime_picker_formfield: ^2.0.1
-  flutter_stripe: ^10.1.1
 
 
 
@@ -102,9 +101,11 @@ flutter:
     - assets/profile.png
     - assets/icons/edit.png
     - assets/icons/delete.png
+    - assets/icons/logout.svg
     - assets/delete_icon.svg
     - assets/app_background.png
     - assets/icons/camera.png
+    - assets/icons/reset.svg
     - assets/icons/date.png
     - assets/animations/loading.json
     - assets/animations/loading2.json

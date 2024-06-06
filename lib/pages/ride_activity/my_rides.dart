@@ -77,6 +77,7 @@ class _MyRidesTabState extends State<MyRidesTab> {
     ),
 
       Card(
+        margin: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 64.0),
         child: DefaultTabController(
         length: 2,
         child: Scaffold(

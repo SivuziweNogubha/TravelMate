@@ -65,6 +65,7 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                           size: 30, // Adjust size as needed
                         ),
                         onPressed: () {
+                          print(document.id);
                           _showDeleteDialog(context, document.id);
                         },
                       ),

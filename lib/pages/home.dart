@@ -6,6 +6,7 @@ import 'package:lifts_app/pages/ride_activity/my_rides.dart';
 import 'package:lifts_app/pages/find_ride/find_ride.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifts_app/pages/onboarding/login_screen.dart';
+import 'package:lifts_app/pages/widgets/myAppBar.dart';
 import '../model/user_model.dart';
 import 'offer_ride/offer_ride.dart';
 
@@ -49,14 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ProfilePage(uid: uid,),
     ];
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('TravelMate'),
-        centerTitle: true,
-        backgroundColor: Colors.indigo,
-      ),
-
-
-
+      appBar: defaultAppBar(context, "TravelMate"),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -65,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
+            // type: BottomNavigationBarType.fixed,
             items: [
               BottomNavigationBarItem(
                 icon: ImageIcon(
@@ -88,13 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 label: 'My Rides',
               ),
-              // BottomNavigationBarItem(
-              //   icon: ImageIcon(
-              //     AssetImage('assets/profile.png'),
-              //     size: 28,
-              //   ),
-              //   label: 'Profile',
-              // ),
               BottomNavigationBarItem(
                 icon: widget.userModel?.photoURL != null
                     ? CircleAvatar(
