@@ -9,6 +9,8 @@ import 'package:lifts_app/pages/onboarding/login_screen.dart';
 import 'package:lifts_app/pages/widgets/myAppBar.dart';
 import '../model/user_model.dart';
 import 'offer_ride/offer_ride.dart';
+import 'package:flutter_svg/svg.dart';
+
 
 // class MyHomePage extends StatefulWidget {
 //   const MyHomePage({super.key, required this.title});
@@ -46,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final List<Widget> _widgetOptions = [
       OfferRideTab(),
       FindRideTab(),
-      MyRidesTab(),
+      // MyRidesTab(),
       ProfilePage(uid: uid,),
     ];
     return Scaffold(
