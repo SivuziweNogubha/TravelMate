@@ -59,11 +59,11 @@ class _FindRideTabState extends State<FindRideTab> {
     }
   }
 
-  void _getDestinationImage(String placeId) async {
-    String photoUrl = await _mapsService.getLocationPhoto(placeId);
-    // Use the photoUrl to display the destination image
-    print("Photo URL: $photoUrl");
-  }
+  // void _getDestinationImage(String placeId) async {
+  //   String photoUrl = await _mapsService.getLocationPhoto(placeId);
+  //   // Use the photoUrl to display the destination image
+  //   print("Photo URL: $photoUrl");
+  // }
 
 
 

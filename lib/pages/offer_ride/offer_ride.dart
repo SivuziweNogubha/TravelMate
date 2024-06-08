@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_places_flutter/google_places_flutter.dart'; // Ensure you have added this package in pubspec.yaml
+import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:lifts_app/src/google_maps_service.dart';
 
 import '../../model/lift.dart';
