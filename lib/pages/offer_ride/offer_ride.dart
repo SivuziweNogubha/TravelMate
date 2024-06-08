@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_places_flutter/google_places_flutter.dart'; // Ensure you have added this package in pubspec.yaml
+import 'package:lifts_app/src/google_maps_service.dart';
 
 import '../../model/lift.dart';
 
@@ -50,9 +51,13 @@ class _OfferRideTabState extends State<OfferRideTab> {
   }
 
   Future<void> _offerRide() async {
+    GoogleMapsService service = GoogleMapsService();
     if (_formKey.currentState!.validate()) {
       final user = FirebaseAuth.instance.currentUser;
       final liftRef = FirebaseFirestore.instance.collection('lifts').doc();
+
+      String destinationImageUrl = await service.getDestinationPhotoUrl(_destinationController.text);
+
       final liftdata = Lift(
         liftId: liftRef.id,
         offeredBy: user!.uid,
@@ -60,6 +65,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
         destinationLocation: _destinationController.text,
         departureDateTime: _dateTime ?? DateTime.now(),
         availableSeats: _availableSeats,
+        destinationImage: destinationImageUrl
       );
 
       if (_departureLocationController.text.isNotEmpty &&

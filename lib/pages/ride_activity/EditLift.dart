@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../model/lift.dart';
 import '../../model/lifts_view_model.dart';
 import '../../repository/lifts_repository.dart';
+import '../../src/google_maps_service.dart';
 
 class EditLiftScreen extends StatefulWidget {
   final String liftId;
@@ -42,9 +43,14 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
   }
   //I NEED TO HAVE THIS LOGIC ON LIFTSVIEWMODEL
   final _viewModel = LiftsViewModel(LiftsRepository());
+  GoogleMapsService service = GoogleMapsService();
+
+
 
   Future<void> _submitUpdate() async {
     // final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    String destinationImageUrl = await service.getDestinationPhotoUrl(_destinationController.text);
+
     if (_formKey.currentState!.validate()) {
       final updatedLiftData = Lift( // Assuming Lift is your data structure class
         departureLocation: _departureLocationController.text,
@@ -53,6 +59,7 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
         availableSeats: _availableSeats,
         liftId: widget.liftId,
         offeredBy:FirebaseAuth.instance.currentUser!.uid ,
+        destinationImage: destinationImageUrl
       );
 
       // Call updateLift method in ViewModel

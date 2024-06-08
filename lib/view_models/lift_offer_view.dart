@@ -3,10 +3,13 @@ import 'package:flutter/cupertino.dart';
 
 import '../model/lift.dart';
 import '../repository/lifts_repository.dart';
+import 'package:lifts_app/src/google_maps_service.dart';
 
 class LiftOfferViewModel extends ChangeNotifier {
   final LiftsRepository _liftRepository = LiftsRepository();
   final String _userId;
+  GoogleMapsService service = GoogleMapsService();
+
 
   LiftOfferViewModel(this._userId);
 
@@ -16,19 +19,18 @@ class LiftOfferViewModel extends ChangeNotifier {
     required DateTime departureDateTime,
     required int availableSeats,
   }) async {
+    // Fetch the destination photo URL from the API
+    String destinationImageUrl = await service.getDestinationPhotoUrl(destinationLocation);
+
     final lift = Lift(
       liftId: '',
       offeredBy: _userId,
       departureLocation: departureLocation,
       destinationLocation: destinationLocation,
       departureDateTime: departureDateTime,
-      // departureTime: Timestamp.fromDate(departureDateTime),
       availableSeats: availableSeats,
-      // liftStatus: 'pending',
+      destinationImage: destinationImageUrl, // Include the destinationImage
       passengers: [],
-      // bookingTime: Timestamp.now(),
-      // driverId: _userId,
-      // Set other fields as needed
     );
 
     try {
@@ -39,7 +41,6 @@ class LiftOfferViewModel extends ChangeNotifier {
     }
   }
 
-
   Future<void> updateLift({
     required String liftId,
     required String departureLocation,
@@ -47,19 +48,18 @@ class LiftOfferViewModel extends ChangeNotifier {
     required DateTime departureDateTime,
     required int availableSeats,
   }) async {
+    // Fetch the destination photo URL from the API
+    String destinationImageUrl = await service.getDestinationPhotoUrl(destinationLocation);
+
     final lift = Lift(
       liftId: liftId,
       offeredBy: _userId,
       departureLocation: departureLocation,
       destinationLocation: destinationLocation,
       departureDateTime: departureDateTime,
-      // departureTime: Timestamp.fromDate(departureDateTime),
       availableSeats: availableSeats,
-      // liftStatus: 'pending', // Assuming you want to keep the lift status as 'pending'
+      destinationImage: destinationImageUrl, // Include the destinationImage
       passengers: [], // Assuming you don't want to update the passengers list
-      // bookingTime: Timestamp.now(),
-      // driverId: _userId,
-      // Set other fields as needed
     );
 
     try {

@@ -184,9 +184,12 @@
 
 // google_maps_service.dart
 
+import 'dart:convert';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 class GoogleMapsService {
   late GoogleMapController googleMapController;
@@ -215,4 +218,66 @@ class GoogleMapsService {
   String get googleMapsApiKey {
     return dotenv.env['GOOGLE_CLOUD_MAP_ID'] ?? '';
   }
+
+  Future<String> getLocationPhoto(String placeId) async {
+    Uri uri = Uri.https(
+      "maps.googleapis.com",
+      "maps/api/place/photo",
+      {
+        "maxwidth": "400",
+        "photoreference": placeId,
+        "key": dotenv.get("GOOGLE_CLOUD_MAP_ID"),
+      },
+    );
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        throw Exception("Failed to fetch location photo");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Future<String> getDestinationPhotoUrl(String destination) async {
+  //   final apiKey = dotenv.env['GOOGLE_CLOUD_MAP_ID'] ?? '';
+  //   final url = Uri.https(
+  //     'maps.googleapis.com',
+  //     '/maps/api/staticmap',
+  //     {
+  //       'center': destination,
+  //       'zoom': '10',
+  //       'size': '50x50',
+  //       'key': apiKey,
+  //       'maptype': 'roadmap',
+  //     },
+  //   );
+  //
+  //   return url.toString();
+  // }
+
+  Future<String> getDestinationPhotoUrl(String destination) async {
+    final accessKey = dotenv.env['UNSPLASH_ACCESS_KEY'] ?? '';
+    final query = destination;
+    final url = Uri.https('api.unsplash.com', '/search/photos', {
+      'query': query,
+      'client_id': accessKey,
+      'per_page': '1',
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final photoUrl = jsonData['results'][0]['urls']['regular'];
+      return photoUrl;
+    } else {
+      throw Exception('Failed to fetch destination photo');
+    }
+  }
 }
+
+

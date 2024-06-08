@@ -61,6 +61,7 @@ class Lift {
   final String destinationLocation;
   final DateTime departureDateTime;
   final int availableSeats;
+  final String destinationImage; // Add this line
   List<String> passengers;
 
   Lift({
@@ -70,9 +71,11 @@ class Lift {
     required this.destinationLocation,
     required this.departureDateTime,
     required this.availableSeats,
+    required this.destinationImage, // Add this parameter
     this.passengers = const [],
   });
 
+  // Update the fromJson constructor to include destinationImage
   Lift.fromJson(Map<String, Object?> jsonMap)
       : this(
     liftId: jsonMap['liftId'] as String,
@@ -81,9 +84,11 @@ class Lift {
     destinationLocation: jsonMap['destinationLocation'] as String,
     departureDateTime: (jsonMap['departureDateTime'] as Timestamp).toDate(),
     availableSeats: jsonMap['availableSeats'] as int,
+    destinationImage: jsonMap['destinationImage'] as String, // Add this line
     passengers: (jsonMap['passengers'] as List<dynamic>).cast<String>(),
   );
 
+  // Update the toJson method to include destinationImage
   Map<String, Object?> toJson() {
     return {
       'liftId': liftId,
@@ -92,13 +97,8 @@ class Lift {
       'destinationLoaction': destinationLocation,
       'departureDateTime': departureDateTime,
       'availableSeats': availableSeats,
+      'destinationImage': destinationImage, // Add this line
       'passengers': passengers,
     };
-  }
-
-  @override
-  String toString() {
-    return 'Lift{liftId: $liftId, offeredBy: $offeredBy, departureLocation: $departureLocation,'
-        ' destinationLocation: $destinationLocation, departureDateTime: $departureDateTime, availableSeats: $availableSeats, passengers: $passengers}';
   }
 }

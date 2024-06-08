@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:lifts_app/pages/widgets/loading_animation.dart';
 
 import '../../repository/lifts_repository.dart';
+import '../../src/google_maps_service.dart';
 
 class FindRideTab extends StatefulWidget {
   @override
@@ -29,6 +30,8 @@ class _FindRideTabState extends State<FindRideTab> {
   Position? _currentPosition;
 
   final _liftsRepository = LiftsRepository();
+  final GoogleMapsService _mapsService = GoogleMapsService();
+
 
   static const _initialCameraPosition = CameraPosition(
     target: LatLng(-26.232590, 28.240967),
@@ -39,6 +42,8 @@ class _FindRideTabState extends State<FindRideTab> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _mapsService.getCurrentLocation();
+
   }
 
   Future<void> _getCurrentLocation() async {
@@ -53,6 +58,14 @@ class _FindRideTabState extends State<FindRideTab> {
       print('Error getting current location: $e');
     }
   }
+
+  void _getDestinationImage(String placeId) async {
+    String photoUrl = await _mapsService.getLocationPhoto(placeId);
+    // Use the photoUrl to display the destination image
+    print("Photo URL: $photoUrl");
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -196,6 +209,19 @@ class _FindRideTabState extends State<FindRideTab> {
                           trailing: Text(
                             'Available Seats: ${ride['availableSeats'].toString()}',
                           ),
+
+                            leading: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(
+                                      'https://maps.googleapis.com/maps/api/staticmap?center=${ride['destinationLoaction']}&zoom=13&size=50x50&key=${dotenv.get("GOOGLE_CLOUD_MAP_ID")}'),
+                                ),
+                              ),
+                            ),
                           onTap: () {
                             showDialog(
                               context: context,
