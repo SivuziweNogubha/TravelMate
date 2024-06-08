@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:lifts_app/repository/lifts_repository.dart';
+import 'package:lifts_app/view_models/profile_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:lifts_app/model/lifts_view_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -55,6 +56,8 @@ Future<void> main() async {
 
   // await GoogleMaps.init();
   await Firebase.initializeApp();
+  final currentUser = FirebaseAuth.instance.currentUser;
+  final userId = currentUser?.uid;
 
 
   runApp(
@@ -67,6 +70,10 @@ Future<void> main() async {
           create: (context) => LiftsViewModel(Provider.of<LiftsRepository>(context)),
         ),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        // Add the ProfileViewModel provider
+        if (userId != null)
+          ChangeNotifierProvider(create: (_) => ProfileViewModel(userId)),
         // Add other providers here if needed
       ],
       child: MaterialApp(

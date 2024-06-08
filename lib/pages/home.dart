@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final List<Widget> _widgetOptions = [
       OfferRideTab(),
       FindRideTab(),
-      // MyRidesTab(),
+      MyRidesTab(),
       ProfilePage(uid: uid,),
     ];
     return Scaffold(

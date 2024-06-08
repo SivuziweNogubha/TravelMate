@@ -36,6 +36,13 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Colors.indigo,
+                    width: 2.0, // Set the border width
+                  ),
+                  borderRadius: BorderRadius.circular(8.0), // Set the border radius if needed
+                ),
                 child: ListTile(
                   title: Text(data['destinationLoaction']),
                   subtitle: Text('Departure: ${data['departureLoaction']} on $formattedDateTime'),
