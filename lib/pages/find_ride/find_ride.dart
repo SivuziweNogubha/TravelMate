@@ -299,38 +299,14 @@ class _FindRideTabState extends State<FindRideTab> {
     });
   }
 
-  // Future<void> joinLift(String liftId, String userId) async {
-  //   try {
-  //     String bookingId = _firestore.collection('bookings').doc().id;
-  //     Booking booking = Booking(
-  //       bookingId: bookingId,
-  //       userId: userId,
-  //       liftId: liftId,
-  //       confirmed: true,
-  //     );
-  //     await _liftsRepository.createBooking(booking);
-  //
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Lift booked successfully')),
-  //     );
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error booking lift: $e')),
-  //     );
-  //   }
-  // }
   Future<void> joinLift(String liftId, String userId) async {
     try {
-      // Fetch the current lift data
       DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
       Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
 
       int availableSeats = liftData['availableSeats'];
       List<String> passengers = List<String>.from(liftData['passengers']);
-
-      // Check if there are available seats
       if (availableSeats > 0) {
-        // Create a new booking
         String bookingId = _firestore.collection('bookings').doc().id;
         Booking booking = Booking(
           bookingId: bookingId,
@@ -340,7 +316,6 @@ class _FindRideTabState extends State<FindRideTab> {
         );
         await _liftsRepository.createBooking(booking);
 
-        // Update the lift's passengers and available seats
         passengers.add(userId);
         await _firestore.collection('lifts').doc(liftId).update({
           'availableSeats': availableSeats - 1,
@@ -351,7 +326,6 @@ class _FindRideTabState extends State<FindRideTab> {
           SnackBar(content: Text('Lift booked successfully')),
         );
       } else {
-        // No available seats
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No available seats left')),
         );

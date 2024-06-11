@@ -188,7 +188,11 @@ class _OfferRideTabState extends State<OfferRideTab> {
                     SizedBox(height: 16.0),
                     Row(
                       children: [
-                        Text('Date and Time:'),
+                        Image.asset(
+                          'assets/icons/date_time.png',
+                          width: 44,
+                          height: 44,
+                        ),
                         SizedBox(width: 16.0),
                         ElevatedButton(
                           onPressed: () async {
@@ -229,7 +233,11 @@ class _OfferRideTabState extends State<OfferRideTab> {
                     SizedBox(height: 16.0),
                     Row(
                       children: [
-                        Text('Available Seats:'),
+                        Image.asset(
+                          'assets/icons/seats.png',
+                          width: 44,
+                          height: 44,
+                        ),
                         SizedBox(width: 16.0),
                         DropdownButton<int>(
                           value: _availableSeats,

@@ -101,6 +101,10 @@ flutter:
     - assets/back.png
     - assets/profile.png
     - assets/icons/edit.png
+    - assets/icons/see.png
+    - assets/icons/hide.png
+    - assets/icons/seats.png
+    - assets/icons/date_time.png
     - assets/icons/delete.png
     - assets/icons/TravelMate.png
     - assets/icons/logout.svg

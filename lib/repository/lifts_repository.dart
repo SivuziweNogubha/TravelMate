@@ -206,7 +206,7 @@ class LiftsRepository {
     }).toList();
   }
 
-
+//USE THIS CONFIRM METHOD INSTEAD OF DOING IT MANUALLY
   Future<void> confirmBooking(String bookingId) async {
     await _firestore.collection('bookings').doc(bookingId).update({
       'confirmed': true,
@@ -214,8 +214,10 @@ class LiftsRepository {
   }
 
   Future<void> cancelBooking(String bookingId) async {
-    await _firestore.collection('bookings').doc(bookingId).update({
-      'confirmed': false,
-    });
+    // try {
+      await _firestore.collection('bookings').doc(bookingId).update({
+        'confirmed': false,
+      });
+
   }
 }

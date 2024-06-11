@@ -34,6 +34,7 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
 
   bool _isLoading = false;
   late AnimationController _loadingController;
+  bool _obscureText = true;
 
   @override
   void initState() {
@@ -158,9 +159,33 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
     );
 
     final passwordFields = TextFormField(
+      // autofocus: false,
+      // controller: passwordController,
+      // obscureText: true,
+      // validator: (value) {
+      //   RegExp regex = RegExp(r'^.{6,}$');
+      //   if (value!.isEmpty) {
+      //     return ("Password is required for Login");
+      //   }
+      //   if (!regex.hasMatch(value)) {
+      //     return ("Password is Invalid!!!");
+      //   }
+      // },
+      // onSaved: (value) {
+      //   passwordController.text = value!;
+      // },
+      // textInputAction: TextInputAction.done,
+      // decoration: InputDecoration(
+      //   prefixIcon: Icon(Icons.key),
+      //   contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+      //   hintText: "Password",
+      //   border: OutlineInputBorder(
+      //     borderRadius: BorderRadius.circular(10),
+      //   ),
+      // ),
       autofocus: false,
       controller: passwordController,
-      obscureText: true,
+      obscureText: _obscureText,
       validator: (value) {
         RegExp regex = RegExp(r'^.{6,}$');
         if (value!.isEmpty) {
@@ -169,17 +194,28 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
         if (!regex.hasMatch(value)) {
           return ("Password is Invalid!!!");
         }
+        return null;
       },
       onSaved: (value) {
         passwordController.text = value!;
       },
       textInputAction: TextInputAction.done,
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.key),
-        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        prefixIcon: const Icon(Icons.key),
+        contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Password",
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
+        ),
+        suffixIcon: GestureDetector(
+          onTap: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+          child: _obscureText
+              ? Image.asset('assets/icons/hide.png', width: 15, height: 15)
+              : Image.asset('assets/icons/see.png', width: 15, height: 15),
         ),
       ),
     );
