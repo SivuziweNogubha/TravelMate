@@ -104,6 +104,7 @@ flutter:
     - assets/icons/see.png
     - assets/icons/hide.png
     - assets/icons/seats.png
+    - assets/icons/hitchhike.png
     - assets/icons/date_time.png
     - assets/icons/delete.png
     - assets/icons/TravelMate.png

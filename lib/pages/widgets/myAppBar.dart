@@ -13,15 +13,26 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
   final user = userProvider.user;
 
   return AppBar(
-    title: Text(
-      screenName ?? "",
-      style: const TextStyle(
-        color: Colors.black,
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        decoration: TextDecoration.none,
-        fontFamily: 'Aeonik',
-      ),
+    title: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'TravelMate',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+            decoration: TextDecoration.none,
+            fontFamily: 'Aeonik',
+          ),
+        ),
+        const SizedBox(width: 8),
+        Image.asset(
+          'assets/icons/hitchhike.png',
+          width: 44,
+          height: 44,
+        ),
+      ],
     ),
     centerTitle: true,
     backgroundColor: const Color(0x44000000),
