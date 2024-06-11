@@ -11,8 +11,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:lifts_app/pages/find_ride/ride_details.dart';
 import 'package:lifts_app/pages/widgets/loading_animation.dart';
 
+import '../../model/BookingModel.dart';
 import '../../repository/lifts_repository.dart';
 import '../../src/google_maps_service.dart';
 
@@ -22,6 +24,7 @@ class FindRideTab extends StatefulWidget {
 }
 
 class _FindRideTabState extends State<FindRideTab> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _destinationController = TextEditingController();
   DateTime? _dateTime;
   List<DocumentSnapshot>? _searchResults;
@@ -222,6 +225,13 @@ class _FindRideTabState extends State<FindRideTab> {
                                 ),
                               ),
                             ),
+                            // onTap: () {
+                            //   Navigator.of(context).push(
+                            //     MaterialPageRoute(
+                            //       builder: (context) => LiftDetailsPage(liftId: liftId),
+                            //     ),
+                            //   );
+                            // },
                           onTap: () {
                             showDialog(
                               context: context,
@@ -238,6 +248,7 @@ class _FindRideTabState extends State<FindRideTab> {
                                     ),
                                     TextButton(
                                       child: Text('Book'),
+
                                       onPressed: () async {
                                         Navigator.of(context).pop();
                                         String mylift = liftId;
@@ -263,6 +274,37 @@ class _FindRideTabState extends State<FindRideTab> {
       ],
     );
   }
+  // void _searchRides() async {
+  //   String destination = _destinationController.text;
+  //   DateTime? selectedDate = _dateTime;
+  //   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  //
+  //   if (destination.isEmpty || selectedDate == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Please enter a destination and select a date')),
+  //     );
+  //     return;
+  //   }
+  //
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //
+  //   List<DocumentSnapshot> results = await _liftsRepository.searchRides(destination, selectedDate, currentUserId);
+  //
+  //   setState(() {
+  //     _searchResults = results;
+  //     _isLoading = false;
+  //   });
+  // }
+  //
+  // Future<void> joinLift(String liftId, String userId) async {
+  //   await _liftsRepository.joinLift(liftId, userId);
+  //
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(content: Text('Lift booked successfully')),
+  //   );
+  // }
   void _searchRides() async {
     String destination = _destinationController.text;
     DateTime? selectedDate = _dateTime;
@@ -279,7 +321,8 @@ class _FindRideTabState extends State<FindRideTab> {
       _isLoading = true;
     });
 
-    List<DocumentSnapshot> results = await _liftsRepository.searchRides(destination, selectedDate, currentUserId);
+    List<DocumentSnapshot> results = await _liftsRepository.searchRides(
+        destination, selectedDate, currentUserId);
 
     setState(() {
       _searchResults = results;
@@ -288,11 +331,24 @@ class _FindRideTabState extends State<FindRideTab> {
   }
 
   Future<void> joinLift(String liftId, String userId) async {
-    await _liftsRepository.joinLift(liftId, userId);
+    try {
+      String bookingId = _firestore.collection('bookings').doc().id;
+      Booking booking = Booking(
+        bookingId: bookingId,
+        userId: userId,
+        liftId: liftId,
+        confirmed: true,
+      );
+      await _liftsRepository.createBooking(booking);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Lift booked successfully')),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lift booked successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error booking lift: $e')),
+      );
+    }
   }
 
 }

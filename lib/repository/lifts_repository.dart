@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../model/BookingModel.dart';
 import '../model/lift.dart';
 
 /// Manages storing and retrieval of Lifts from Firebase
@@ -161,5 +162,40 @@ class LiftsRepository {
     } catch (e) {
       print('Error deleting user data: $e');
     }
+  }
+
+
+  Future<void> createBooking(Booking booking) async {
+    try {
+      await _firestore.collection('bookings').add(booking.toJson());
+      logger.i('Booking created with ID: ${booking.bookingId}');
+    } catch (error) {
+      logger.e('Error creating booking: $error');
+    }
+  }
+
+  Future<List<Booking>> getBookingsByUserId(String userId) async {
+    final QuerySnapshot snapshot = await _firestore
+        .collection('bookings')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return Booking.fromJson(data);
+    }).toList();
+  }
+
+
+  Future<void> confirmBooking(String bookingId) async {
+    await _firestore.collection('bookings').doc(bookingId).update({
+      'confirmed': true,
+    });
+  }
+
+  Future<void> cancelBooking(String bookingId) async {
+    await _firestore.collection('bookings').doc(bookingId).update({
+      'confirmed': false,
+    });
   }
 }

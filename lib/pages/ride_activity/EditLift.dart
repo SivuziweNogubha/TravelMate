@@ -76,6 +76,7 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('Edit Ride Details'),
       ),
       body: Padding(

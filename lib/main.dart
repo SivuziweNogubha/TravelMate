@@ -69,11 +69,12 @@ Future<void> main() async {
         ChangeNotifierProvider( // Inject LiftsRepository into LiftsViewModel
           create: (context) => LiftsViewModel(Provider.of<LiftsRepository>(context)),
         ),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        // Add the ProfileViewModel provider
         if (userId != null)
           ChangeNotifierProvider(create: (_) => ProfileViewModel(userId)),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        // ChangeNotifierProvider(create: (_) => UserProvider()),
+        // Add the ProfileViewModel provider
+
         // Add other providers here if needed
       ],
       child: MaterialApp(

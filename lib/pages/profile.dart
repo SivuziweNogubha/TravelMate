@@ -416,7 +416,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
               onPressed: () async {
                 await Provider.of<ProfileViewModel>(context, listen: false).signOut();
                 userProvider.clearUser();
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (_) => const login_screen()),
