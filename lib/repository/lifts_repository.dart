@@ -165,8 +165,28 @@ class LiftsRepository {
   }
 
 
+  // Future<void> createBooking(Booking booking) async {
+  //   try {
+  //     await _firestore.collection('bookings').add(booking.toJson());
+  //     logger.i('Booking created with ID: ${booking.bookingId}');
+  //   } catch (error) {
+  //     logger.e('Error creating booking: $error');
+  //   }
+  // }
+
   Future<void> createBooking(Booking booking) async {
     try {
+      final existingBookingQuery = await _firestore
+          .collection('bookings')
+          .where('liftId', isEqualTo: booking.liftId)
+          .where('userId', isEqualTo: booking.userId)
+          .get();
+
+      if (existingBookingQuery.docs.isNotEmpty) {
+        logger.w('Booking already exists for this lift and user');
+        return;
+      }
+
       await _firestore.collection('bookings').add(booking.toJson());
       logger.i('Booking created with ID: ${booking.bookingId}');
     } catch (error) {

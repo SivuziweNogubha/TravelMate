@@ -274,37 +274,6 @@ class _FindRideTabState extends State<FindRideTab> {
       ],
     );
   }
-  // void _searchRides() async {
-  //   String destination = _destinationController.text;
-  //   DateTime? selectedDate = _dateTime;
-  //   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  //
-  //   if (destination.isEmpty || selectedDate == null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Please enter a destination and select a date')),
-  //     );
-  //     return;
-  //   }
-  //
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //
-  //   List<DocumentSnapshot> results = await _liftsRepository.searchRides(destination, selectedDate, currentUserId);
-  //
-  //   setState(() {
-  //     _searchResults = results;
-  //     _isLoading = false;
-  //   });
-  // }
-  //
-  // Future<void> joinLift(String liftId, String userId) async {
-  //   await _liftsRepository.joinLift(liftId, userId);
-  //
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(content: Text('Lift booked successfully')),
-  //   );
-  // }
   void _searchRides() async {
     String destination = _destinationController.text;
     DateTime? selectedDate = _dateTime;
@@ -330,20 +299,63 @@ class _FindRideTabState extends State<FindRideTab> {
     });
   }
 
+  // Future<void> joinLift(String liftId, String userId) async {
+  //   try {
+  //     String bookingId = _firestore.collection('bookings').doc().id;
+  //     Booking booking = Booking(
+  //       bookingId: bookingId,
+  //       userId: userId,
+  //       liftId: liftId,
+  //       confirmed: true,
+  //     );
+  //     await _liftsRepository.createBooking(booking);
+  //
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Lift booked successfully')),
+  //     );
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error booking lift: $e')),
+  //     );
+  //   }
+  // }
   Future<void> joinLift(String liftId, String userId) async {
     try {
-      String bookingId = _firestore.collection('bookings').doc().id;
-      Booking booking = Booking(
-        bookingId: bookingId,
-        userId: userId,
-        liftId: liftId,
-        confirmed: true,
-      );
-      await _liftsRepository.createBooking(booking);
+      // Fetch the current lift data
+      DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
+      Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lift booked successfully')),
-      );
+      int availableSeats = liftData['availableSeats'];
+      List<String> passengers = List<String>.from(liftData['passengers']);
+
+      // Check if there are available seats
+      if (availableSeats > 0) {
+        // Create a new booking
+        String bookingId = _firestore.collection('bookings').doc().id;
+        Booking booking = Booking(
+          bookingId: bookingId,
+          userId: userId,
+          liftId: liftId,
+          confirmed: true,
+        );
+        await _liftsRepository.createBooking(booking);
+
+        // Update the lift's passengers and available seats
+        passengers.add(userId);
+        await _firestore.collection('lifts').doc(liftId).update({
+          'availableSeats': availableSeats - 1,
+          'passengers': passengers,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lift booked successfully')),
+        );
+      } else {
+        // No available seats
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No available seats left')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error booking lift: $e')),
