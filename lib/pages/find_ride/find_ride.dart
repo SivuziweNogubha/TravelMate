@@ -2,16 +2,18 @@
 
 import 'dart:ui';
 
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_datetime_picker/flutter_date_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:lifts_app/pages/find_ride/ride_details.dart';
+// import 'package:flutter/material.dart' as material;
+// import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:lifts_app/pages/widgets/loading_animation.dart';
 
 import '../../model/BookingModel.dart';
@@ -133,10 +135,13 @@ class _FindRideTabState extends State<FindRideTab> {
 
                 Row(
                   children: [
-                    Text('Date:'),
+                    Image.asset(
+                      'assets/icons/date_time.png',
+                      width: 44,
+                      height: 44,
+                    ),
                     SizedBox(width: 16.0),
                     ElevatedButton(
-
                       onPressed: () async {
                         final pickedDateTime = await showDatePicker(
                           context: context,
@@ -157,13 +162,46 @@ class _FindRideTabState extends State<FindRideTab> {
                             : DateFormat('yyyy-MM-dd').format(_dateTime!),
                       ),
                     ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     DatePicker.showDateTimePicker(
+                    //       context,
+                    //       showTitleActions: true,
+                    //       minTime: DateTime.now(),
+                    //       maxTime: DateTime(2100, 12, 31),
+                    //       onChanged: (date) {
+                    //         print('change $date');
+                    //       },
+                    //       onConfirm: (date) {
+                    //         setState(() {
+                    //           _dateTime = date;
+                    //         });
+                    //       },
+                    //       currentTime: _dateTime ?? DateTime.now(),
+                    //       locale: LocaleType.en,
+                    //     );
+                    //   },
+                    //   child: Text(
+                    //     _dateTime == null
+                    //         ? 'Select Date and Time'
+                    //         : DateFormat('yyyy-MM-dd HH:mm').format(_dateTime!),
+                    //   ),
+                    // ),
 
                   ],
                 ),
                 SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: _searchRides,
-                  child: Text('Search Rides'),
+                Positioned(
+                  bottom: 16.0,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: ElevatedButton.icon(
+                      onPressed:_searchRides,
+                      icon: ImageIcon(AssetImage('assets/icons/search.png')),
+                      label: Text('search ride'),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 16.0),
                 _isLoading

@@ -12,7 +12,7 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
   final userProvider = Provider.of<UserProvider>(context);
   final user = userProvider.user;
 
-  return AppBar(
+  return AppBar(                  
     title: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -28,9 +28,9 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
         ),
         const SizedBox(width: 8),
         Image.asset(
-          'assets/icons/hitchhike.png',
+          'assets/icons/TravelMate.png',
           width: 44,
-          height: 44,
+          height: 74,
         ),
       ],
     ),

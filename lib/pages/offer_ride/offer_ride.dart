@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as material;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -196,7 +197,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
                         SizedBox(width: 16.0),
                         ElevatedButton(
                           onPressed: () async {
-                            final pickedDateTime = await showDatePicker(
+                            final pickedDateTime = await material.showDatePicker(
                               context: context,
                               initialDate: DateTime.now(),
                               firstDate: DateTime.now(),
@@ -204,7 +205,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
                             );
 
                             if (pickedDateTime != null) {
-                              final pickedTime = await showTimePicker(
+                              final pickedTime = await material.showTimePicker(
                                 context: context,
                                 initialTime: TimeOfDay.now(),
                               );
@@ -259,9 +260,21 @@ class _OfferRideTabState extends State<OfferRideTab> {
                       ],
                     ),
                     SizedBox(height: 16.0),
-                    ElevatedButton(
-                      onPressed: _offerRide,
-                      child: Text('Offer Ride'),
+                    // ElevatedButton(
+                    //   onPressed: _offerRide,
+                    //   child: Text('Offer Ride'),
+                    // ),
+                    Positioned(
+                      bottom: 16.0,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: ElevatedButton.icon(
+                          onPressed: _offerRide,
+                          icon: ImageIcon(AssetImage('assets/icons/car_passengers.png')),
+                          label: Text('Offer Ride'),
+                        ),
+                      ),
                     ),
                   ],
                 ),

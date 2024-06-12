@@ -57,8 +57,9 @@ dependencies:
   google_places_flutter: ^2.0.8
   image_picker: ^1.1.2
   firebase_storage: ^11.7.7
-  datetime_picker_formfield: ^2.0.1
+#  datetime_picker_formfield: ^2.0.1
   http: ^1.2.1
+  flutter_datetime_picker: ^1.5.1
 
 
 
@@ -92,7 +93,6 @@ flutter:
   assets:
     - assets/logo.png
     - assets/chevron_icon.svg
-    - assets/car_passengers.png
     - assets/activity.png
     - assets/passenger.png
     - assets/logout.png
@@ -108,10 +108,13 @@ flutter:
     - assets/icons/date_time.png
     - assets/icons/delete.png
     - assets/icons/TravelMate.png
+    - assets/icons/search.png
     - assets/icons/logout.svg
     - assets/delete_icon.svg
     - assets/app_background.png
     - assets/icons/camera.png
+    - assets/icons/car_passengers.png
+    - assets/icons/hike.png
     - assets/icons/reset.svg
     - assets/icons/date.png
     - assets/animations/loading.json
