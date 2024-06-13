@@ -1,120 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class RideDetailsScreen extends StatefulWidget {
-  final String liftId;
+class ConfirmRidePage extends StatelessWidget {
+  final LatLng departureLocation;
+  final LatLng destinationLocation;
   final String offeredBy;
-  final String departureLocation;
-  final String destinationLocation;
-  final DateTime departureDateTime;
-  final int availableSeats;
-  final String photoUrl;
+  final String offeredByName;
+  final String offeredByPhotoUrl;
+  final String destination;
+  final String departure;
 
-  const RideDetailsScreen({
-    required this.liftId,
-    required this.offeredBy,
+  ConfirmRidePage({
     required this.departureLocation,
     required this.destinationLocation,
-    required this.departureDateTime,
-    required this.availableSeats,
-    required this.photoUrl,
+    required this.offeredBy,
+    required this.offeredByName,
+    required this.offeredByPhotoUrl,
+    required this.destination,
+    required this.departure,
   });
 
-  @override
-  _RideDetailsScreenState createState() => _RideDetailsScreenState();
-}
-
-class _RideDetailsScreenState extends State<RideDetailsScreen> {
-  late GoogleMapController _googleMapController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Confirm Ride'),
+        // backgroundColor: Colors.transparent,
+      ),
+      body: Column(
         children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: LatLng(-26.232590, 28.240967), // Use your coordinates here
-              zoom: 14.4746,
+          Expanded(
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(
+                  (departureLocation.latitude + destinationLocation.latitude) / 2,
+                  (departureLocation.longitude + destinationLocation.longitude) / 2,
+                ),
+                zoom: 12,
+              ),
+              markers: {
+                Marker(
+                  markerId: MarkerId('departure'),
+                  position: departureLocation,
+                  infoWindow: InfoWindow(title: 'Departure Location'),
+                ),
+                Marker(
+                  markerId: MarkerId('destination'),
+                  position: destinationLocation,
+                  infoWindow: InfoWindow(title: 'Destination Location'),
+                ),
+              },
+              polylines: {
+                Polyline(
+                  polylineId: PolylineId('route'),
+                  points: [departureLocation, destinationLocation],
+                  color: Colors.blue,
+                  width: 4,
+                ),
+              },
             ),
-            onMapCreated: (controller) {
-              _googleMapController = controller;
-            },
-            markers: _createMarkers(),
-            polylines: _createPolylines(),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(widget.photoUrl),
-                    ),
-                    title: Text('Offered by: ${widget.offeredBy}'),
-                    subtitle: Text('Departure: ${widget.departureLocation}\nDestination: ${widget.destinationLocation}'),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Implement confirm functionality
-                        },
-                        child: Text('Confirm'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Implement cancel functionality
-                        },
-                        child: Text('Cancel'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Trip Details'),
+                Text('Departure: ${departure}'),
+                Text('Destination: ${destination}'),
+                // Display user details
+                Text('Offered By: $offeredByName'),
+                // Display user profile picture
+                CircleAvatar(
+                  backgroundImage: NetworkImage(offeredByPhotoUrl),
+                ),
+                // Display trip details here
+                // Offered by, price, etc.
+                ElevatedButton(
+                  onPressed: () {
+                    // Implement booking functionality
+                    // Navigate to confirmation page or perform booking action
+                  },
+                  child: Text('Confirm Ride'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to FindRide page
+                  },
+                  child: Text('Cancel'),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  Set<Marker> _createMarkers() {
-    return {
-      Marker(
-        markerId: MarkerId('departure'),
-        position: LatLng(-26.232590, 28.240967), // Use your departure coordinates here
-        infoWindow: InfoWindow(title: 'Departure'),
-      ),
-      Marker(
-        markerId: MarkerId('destination'),
-        position: LatLng(-26.232590, 28.240967), // Use your destination coordinates here
-        infoWindow: InfoWindow(title: 'Destination'),
-      ),
-    };
-  }
-
-  Set<Polyline> _createPolylines() {
-    return {
-      Polyline(
-        polylineId: PolylineId('route'),
-        points: [
-          LatLng(-26.232590, 28.240967), // Use your departure coordinates here
-          LatLng(-26.232590, 28.240967), // Use your destination coordinates here
-        ],
-        color: Colors.blue,
-        width: 5,
-      ),
-    };
   }
 }

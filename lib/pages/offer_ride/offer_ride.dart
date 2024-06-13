@@ -53,46 +53,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
     }
   }
 
-  // Future<void> _offerRide() async {
-  //   GoogleMapsService service = GoogleMapsService();
-  //   if (_formKey.currentState!.validate()) {
-  //     final user = FirebaseAuth.instance.currentUser;
-  //     final liftRef = FirebaseFirestore.instance.collection('lifts').doc();
-  //
-  //     String destinationImageUrl = await service.getDestinationPhotoUrl(_destinationController.text);
-  //
-  //     final liftdata = Lift(
-  //       liftId: liftRef.id,
-  //       offeredBy: user!.uid,
-  //       departureLocation: _departureLocationController.text,
-  //       destinationLocation: _destinationController.text,
-  //       departureDateTime: _dateTime ?? DateTime.now(),
-  //       availableSeats: _availableSeats,
-  //       destinationImage: destinationImageUrl
-  //     );
-  //
-  //     if (_departureLocationController.text.isNotEmpty &&
-  //         _destinationController.text.isNotEmpty &&
-  //         _dateTime != null) {
-  //       try {
-  //         await liftRef.set(liftdata.toJson());
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Ride offered successfully')),
-  //         );
-  //         _resetForm();
-  //       } catch (e) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Failed to offer ride: $e')),
-  //         );
-  //       }
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Please fill in all fields')),
-  //       );
-  //     }
-  //
-  //   }
-  // }
   Future<void> _offerRide() async {
     if (_formKey.currentState!.validate()) {
       final user = FirebaseAuth.instance.currentUser;

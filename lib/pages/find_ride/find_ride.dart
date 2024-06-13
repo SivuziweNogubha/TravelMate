@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:lifts_app/pages/find_ride/ride_details.dart';
 // import 'package:flutter/material.dart' as material;
 // import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:lifts_app/pages/widgets/loading_animation.dart';
@@ -244,43 +245,62 @@ class _FindRideTabState extends State<FindRideTab> {
                                 ),
                               ),
                             ),
-                            // onTap: () {
-                            //   Navigator.of(context).push(
-                            //     MaterialPageRoute(
-                            //       builder: (context) => LiftDetailsPage(liftId: liftId),
-                            //     ),
-                            //   );
-                            // },
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Confirm Booking'),
-                                  content: Text('Do you want to book this lift?'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('Cancel'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: Text('Book'),
+                            onTap: () async {
+                              // Fetch user details from Firestore based on the offeredBy field
+                              DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(ride['offeredBy']).get();
 
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
-                                        String mylift = liftId;
-                                        String userId =
-                                            FirebaseAuth.instance.currentUser!.uid;
-                                        await joinLift(mylift, userId);
-                                      },
+                              if (userSnapshot.exists) {
+                                Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ConfirmRidePage(
+                                      departureLocation: LatLng(ride['departureLat'], ride['departureLng']),
+                                      destinationLocation: LatLng(ride['destinationLat'], ride['destinationLng']),
+                                      offeredBy: ride['offeredBy'],
+                                      offeredByName: userData['firstName'],
+                                      offeredByPhotoUrl: userData['photoURL'],
+                                      destination: ride['destinationLocation'],
+                                      departure: ride['departureLocation'],
                                     ),
-                                  ],
+                                  ),
                                 );
-                              },
-                            );
-                          },
+                              } else {
+                                // Handle case where user data is not found
+                                print('User data not found');
+                              }
+                            },
+                          // onTap: () {
+                            // showDialog(
+                            //   context: context,
+                            //   builder: (BuildContext context) {
+                            //     return AlertDialog(
+                            //       title: Text('Confirm Booking'),
+                            //       content: Text('Do you want to book this lift?'),
+                            //       actions: <Widget>[
+                            //         TextButton(
+                            //           child: Text('Cancel'),
+                            //           onPressed: () {
+                            //             Navigator.of(context).pop();
+                            //           },
+                            //         ),
+                            //         TextButton(
+                            //           child: Text('Book'),
+                            //
+                            //           onPressed: () async {
+                            //             Navigator.of(context).pop();
+                            //             String mylift = liftId;
+                            //             String userId =
+                            //                 FirebaseAuth.instance.currentUser!.uid;
+                            //             await joinLift(mylift, userId);
+                            //           },
+                            //         ),
+                            //       ],
+                            //     );
+                            //   },
+                            // );
+
+                          // },
                         ),
                       );
                     },

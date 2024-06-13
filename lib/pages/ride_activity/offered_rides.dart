@@ -18,6 +18,19 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
   bool _isLoading = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Simulate loading for at least 3 seconds
+    Future.delayed(Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore
@@ -44,6 +57,17 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                   borderRadius: BorderRadius.circular(8.0), // Set the border radius if needed
                 ),
                 child: ListTile(
+                  leading: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(data['destinationImage']),
+                      ),
+                    ),
+                  ),
                   title: Text(data['destinationLocation']),
                   subtitle: Text('Departure: ${data['departureLocation']} on $formattedDateTime'),
                   trailing: Row(
@@ -85,7 +109,7 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
         } else {
           if (_isLoading) {
             return CustomLoadingAnimation(
-              animationPath: 'assets/animations/no_data.json',
+              animationPath: 'assets/animations/loading.json',
               width: 200,
               height: 200,
             );
