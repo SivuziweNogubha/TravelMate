@@ -127,6 +127,7 @@
 
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -156,20 +157,166 @@ class GoogleMapsService {
     googleMapController = controller;
   }
 
+  // Future<String?> fetchPlace(Uri uri, {Map<String, String>? headers}) async {
+  //   try {
+  //     final response = await http.get(uri, headers: headers);
+  //     if (response.statusCode == 200) {
+  //       return response.body;
+  //     } else {
+  //       throw Exception("Failed to fetch location");
+  //     }
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  //   return null;
+  // }
+
+
+  // Future<String?> searchPlace(String query) async {
+  //   Uri uri = Uri.https(
+  //     "maps.googleapis.com",
+  //     "maps/api/place/autocomplete/json",
+  //     {
+  //       "input": query,
+  //       "key": dotenv.get("ANDROID_FIREBASE_API_KEY"),
+  //     },
+  //   );
+  //
+  //   return fetchPlace(uri);
+  // }
+  //
+  //
+  // Future<GeoPoint> getLocationCoordinates(String placeId) async {
+  //   Uri uri = Uri.https(
+  //     "maps.googleapis.com",
+  //     "maps/api/place/details/json",
+  //     {
+  //       "place_id": placeId,
+  //       "fields": "geometry",
+  //       "key": dotenv.get("ANDROID_FIREBASE_API_KEY"),
+  //     },
+  //   );
+  //
+  //   String? response = await fetchPlace(uri);
+  //   if (response != null) {
+  //     // Parse the JSON response
+  //     Map<String, dynamic> jsonResponse = json.decode(response);
+  //
+  //     if (jsonResponse["status"] == "OK") {
+  //       // Get the location coordinates
+  //       GeoPoint locationCoordinates = GeoPoint(
+  //         jsonResponse["result"]["geometry"]["location"]["lat"],
+  //         jsonResponse["result"]["geometry"]["location"]["lng"],
+  //       );
+  //       return locationCoordinates;
+  //     } else {
+  //       throw Exception("Failed to fetch location details");
+  //     }
+  //   } else {
+  //     throw Exception("Failed to fetch location details");
+  //   }
+  // }
   Future<String?> fetchPlace(Uri uri, {Map<String, String>? headers}) async {
     try {
       final response = await http.get(uri, headers: headers);
       if (response.statusCode == 200) {
         return response.body;
       } else {
+        print("Failed to fetch location: ${response.body}");
         throw Exception("Failed to fetch location");
       }
     } catch (e) {
+      print("Exception: $e");
       rethrow;
     }
-    return null;
   }
 
+  Future<String?> searchPlace(String query) async {
+    Uri uri = Uri.https(
+      "maps.googleapis.com",
+      "maps/api/place/autocomplete/json",
+      {
+        "input": query,
+        "key": dotenv.get("GOOGLE_CLOUD_MAP_ID"),
+      },
+    );
+
+    String? response = await fetchPlace(uri);
+    if (response != null) {
+      print("Place Autocomplete Response: $response"); // Log the response
+
+      Map<String, dynamic> jsonResponse = json.decode(response);
+
+      if (jsonResponse["status"] == "OK") {
+        return jsonResponse["predictions"][0]["place_id"];
+      } else {
+        print("Failed to fetch place ID: ${jsonResponse["status"]}");
+        throw Exception("Failed to fetch place ID");
+      }
+    } else {
+      throw Exception("Failed to fetch place ID");
+    }
+  }
+
+
+  Future<String> getLocationName(String placeId) async {
+    Uri uri = Uri.https(
+      "maps.googleapis.com",
+      "maps/api/place/details/json",
+      {
+        "place_id": placeId,
+        "fields": "name",
+        "key": dotenv.get("GOOGLE_CLOUD_MAP_ID"),
+      },
+    );
+
+    String? response = await fetchPlace(uri);
+    if (response != null) {
+      Map<String, dynamic> jsonResponse = json.decode(response);
+
+      if (jsonResponse["status"] == "OK") {
+        String locationName = jsonResponse["result"]["name"];
+        return locationName;
+      } else {
+        print("Failed to fetch location details: ${jsonResponse["status"]}");
+        throw Exception("Failed to fetch location details");
+      }
+    } else {
+      throw Exception("Failed to fetch location details");
+    }
+  }
+
+  Future<GeoPoint> getLocationCoordinates(String placeId) async {
+    Uri uri = Uri.https(
+      "maps.googleapis.com",
+      "maps/api/place/details/json",
+      {
+        "place_id": placeId,
+        "fields": "geometry",
+        "key": dotenv.get("GOOGLE_CLOUD_MAP_ID"),
+      },
+    );
+
+    String? response = await fetchPlace(uri);
+    if (response != null) {
+      print("API Response: $response"); // Log the full response
+
+      Map<String, dynamic> jsonResponse = json.decode(response);
+
+      if (jsonResponse["status"] == "OK") {
+        GeoPoint locationCoordinates = GeoPoint(
+          jsonResponse["result"]["geometry"]["location"]["lat"],
+          jsonResponse["result"]["geometry"]["location"]["lng"],
+        );
+        return locationCoordinates;
+      } else {
+        print("Failed to fetch location details: ${jsonResponse["status"]}");
+        throw Exception("Failed to fetch location details");
+      }
+    } else {
+      throw Exception("Failed to fetch location details");
+    }
+  }
   Future<String> getLocationPhotoReference(String placeId) async {
     Uri uri = Uri.https(
       "maps.googleapis.com",
@@ -177,7 +324,7 @@ class GoogleMapsService {
       {
         "place_id": placeId,
         "fields": "photo",
-        "key": dotenv.get("ANDROID_FIREBASE_API_KEY"),
+        "key": dotenv.get("GOOGLE_CLOUD_MAP_ID"),
       },
     );
 
@@ -212,7 +359,7 @@ class GoogleMapsService {
       {
         "maxwidth": "400",
         "photo_reference": photoReference,
-        "key": dotenv.get("ANDROID_FIREBASE_API_KEY"),
+        "key": dotenv.get("GOOGLE_CLOUD_MAP_ID"),
       },
     );
 

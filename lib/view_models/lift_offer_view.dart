@@ -22,6 +22,10 @@ class LiftOfferViewModel extends ChangeNotifier {
     // Fetch the destination photo URL from the API
     String destinationImageUrl = await service.getDestinationPhotoUrl(destinationLocation);
 
+    GeoPoint departureCoordinates = await service.getLocationCoordinates(departureLocation);
+    GeoPoint destinationCoordinates = await service.getLocationCoordinates(destinationLocation);
+
+
     final lift = Lift(
       liftId: '',
       offeredBy: _userId,
@@ -29,6 +33,10 @@ class LiftOfferViewModel extends ChangeNotifier {
       destinationLocation: destinationLocation,
       departureDateTime: departureDateTime,
       availableSeats: availableSeats,
+      departureLat: departureCoordinates.latitude,
+      departureLng: departureCoordinates.longitude,
+      destinationLat: destinationCoordinates.latitude,
+      destinationLng: destinationCoordinates.longitude,
       destinationImage: destinationImageUrl, // Include the destinationImage
       passengers: [],
     );
@@ -51,17 +59,24 @@ class LiftOfferViewModel extends ChangeNotifier {
     // Fetch the destination photo URL from the API
     String destinationImageUrl = await service.getDestinationPhotoUrl(destinationLocation);
 
+    GeoPoint departureCoordinates = await service.getLocationCoordinates(departureLocation);
+    GeoPoint destinationCoordinates = await service.getLocationCoordinates(destinationLocation);
+
+
     final lift = Lift(
-      liftId: liftId,
+      liftId: '',
       offeredBy: _userId,
       departureLocation: departureLocation,
       destinationLocation: destinationLocation,
       departureDateTime: departureDateTime,
       availableSeats: availableSeats,
+      departureLat: departureCoordinates.latitude,
+      departureLng: departureCoordinates.longitude,
+      destinationLat: destinationCoordinates.latitude,
+      destinationLng: destinationCoordinates.longitude,
       destinationImage: destinationImageUrl, // Include the destinationImage
-      passengers: [], // Assuming you don't want to update the passengers list
+      passengers: [],
     );
-
     try {
       await _liftRepository.updateLift(lift);
       // Optionally, you can perform additional actions on successful lift update

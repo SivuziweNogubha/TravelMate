@@ -87,7 +87,7 @@ class LiftsRepository {
   Future<List<DocumentSnapshot>> searchRides(
       String destination, DateTime selectedDate, String currentUserId) async {
     Query query = _firestore.collection('lifts')
-        .where('destinationLoaction', isEqualTo: destination)
+        .where('destinationLocation', isEqualTo: destination)
         .where('offeredBy',isNotEqualTo: currentUserId)
         .where('departureDateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(selectedDate))
         .where('departureDateTime', isLessThanOrEqualTo: Timestamp.fromDate(selectedDate.add(Duration(days: 1))));

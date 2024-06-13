@@ -51,15 +51,23 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
     // final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     String destinationImageUrl = await service.getDestinationPhotoUrl(_destinationController.text);
 
+
+    GeoPoint departureCoordinates = await service.getLocationCoordinates(_departureLocationController.text);
+    GeoPoint destinationCoordinates = await service.getLocationCoordinates(_destinationController.text);
+
     if (_formKey.currentState!.validate()) {
       final updatedLiftData = Lift( // Assuming Lift is your data structure class
-        departureLocation: _departureLocationController.text,
-        destinationLocation: _destinationController.text,
-        departureDateTime: _dateTime,
-        availableSeats: _availableSeats,
+          departureLocation: _departureLocationController.text,
+          departureLat: departureCoordinates.latitude,
+          departureLng: departureCoordinates.longitude,
+          destinationLocation: _destinationController.text,
+          destinationLat: destinationCoordinates.latitude,
+          destinationLng: destinationCoordinates.longitude,
+          departureDateTime: _dateTime ?? DateTime.now(),
+          availableSeats: _availableSeats,
+          destinationImage: destinationImageUrl,
         liftId: widget.liftId,
         offeredBy:FirebaseAuth.instance.currentUser!.uid ,
-        destinationImage: destinationImageUrl
       );
 
       // Call updateLift method in ViewModel

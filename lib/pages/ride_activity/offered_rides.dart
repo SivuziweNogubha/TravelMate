@@ -44,8 +44,8 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                   borderRadius: BorderRadius.circular(8.0), // Set the border radius if needed
                 ),
                 child: ListTile(
-                  title: Text(data['destinationLoaction']),
-                  subtitle: Text('Departure: ${data['departureLoaction']} on $formattedDateTime'),
+                  title: Text(data['destinationLocation']),
+                  subtitle: Text('Departure: ${data['departureLocation']} on $formattedDateTime'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

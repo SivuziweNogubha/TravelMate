@@ -1,101 +1,120 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
-class LiftDetailsPage extends StatefulWidget {
+class RideDetailsScreen extends StatefulWidget {
   final String liftId;
+  final String offeredBy;
+  final String departureLocation;
+  final String destinationLocation;
+  final DateTime departureDateTime;
+  final int availableSeats;
+  final String photoUrl;
 
-  LiftDetailsPage({required this.liftId});
+  const RideDetailsScreen({
+    required this.liftId,
+    required this.offeredBy,
+    required this.departureLocation,
+    required this.destinationLocation,
+    required this.departureDateTime,
+    required this.availableSeats,
+    required this.photoUrl,
+  });
 
   @override
-  _LiftDetailsPageState createState() => _LiftDetailsPageState();
+  _RideDetailsScreenState createState() => _RideDetailsScreenState();
 }
 
-class _LiftDetailsPageState extends State<LiftDetailsPage> {
-  late Future<DocumentSnapshot> _liftDetails;
-  late Future<DocumentSnapshot> _userDetails;
-  late String _offeredBy;
-
-  @override
-  void initState() {
-    super.initState();
-    _liftDetails = _fetchLiftDetails();
-  }
-
-  Future<DocumentSnapshot> _fetchLiftDetails() async {
-    final liftDoc = await FirebaseFirestore.instance.collection('lifts').doc(widget.liftId).get();
-    if (liftDoc.exists) {
-      _offeredBy = liftDoc['offeredBy'];
-      _userDetails = _fetchUserDetails(_offeredBy);
-    } else {
-      throw Exception('Lift not found');
-    }
-    return liftDoc;
-  }
-
-  Future<DocumentSnapshot> _fetchUserDetails(String userId) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    if (!userDoc.exists) {
-      throw Exception('User not found');
-    }
-    return userDoc;
-  }
+class _RideDetailsScreenState extends State<RideDetailsScreen> {
+  late GoogleMapController _googleMapController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Lift Details')),
-      body: FutureBuilder<DocumentSnapshot>(
-        future: _liftDetails,
-        builder: (context, liftSnapshot) {
-          if (liftSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (liftSnapshot.hasError) {
-            return Center(child: Text('Error: ${liftSnapshot.error}'));
-          }
-          if (!liftSnapshot.hasData || !liftSnapshot.data!.exists) {
-            return Center(child: Text('Lift not found'));
-          }
-          final liftData = liftSnapshot.data!.data() as Map<String, dynamic>;
-
-          return FutureBuilder<DocumentSnapshot>(
-            future: _userDetails,
-            builder: (context, userSnapshot) {
-              if (userSnapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
-              if (userSnapshot.hasError) {
-                return Center(child: Text('Error: ${userSnapshot.error}'));
-              }
-              if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-                return Center(child: Text('User not found'));
-              }
-              final userData = userSnapshot.data!.data() as Map<String, dynamic>;
-
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Lift Details:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    Text('Destination: ${liftData['destinationLoaction']}'),
-                    Text('Departure: ${liftData['departureLoaction']} on ${DateFormat('yyyy-MM-dd').format((liftData['departureDateTime'] as Timestamp).toDate())}'),
-                    Text('Available Seats: ${liftData['availableSeats']}'),
-                    SizedBox(height: 20),
-                    Text('Offered By:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    Text('Name: ${userData['name']}'),
-                    Text('Email: ${userData['email']}'),
-                    // Additional user details can be displayed here
-                  ],
-                ),
-              );
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(-26.232590, 28.240967), // Use your coordinates here
+              zoom: 14.4746,
+            ),
+            onMapCreated: (controller) {
+              _googleMapController = controller;
             },
-          );
-        },
+            markers: _createMarkers(),
+            polylines: _createPolylines(),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(widget.photoUrl),
+                    ),
+                    title: Text('Offered by: ${widget.offeredBy}'),
+                    subtitle: Text('Departure: ${widget.departureLocation}\nDestination: ${widget.destinationLocation}'),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // Implement confirm functionality
+                        },
+                        child: Text('Confirm'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Implement cancel functionality
+                        },
+                        child: Text('Cancel'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Set<Marker> _createMarkers() {
+    return {
+      Marker(
+        markerId: MarkerId('departure'),
+        position: LatLng(-26.232590, 28.240967), // Use your departure coordinates here
+        infoWindow: InfoWindow(title: 'Departure'),
+      ),
+      Marker(
+        markerId: MarkerId('destination'),
+        position: LatLng(-26.232590, 28.240967), // Use your destination coordinates here
+        infoWindow: InfoWindow(title: 'Destination'),
+      ),
+    };
+  }
+
+  Set<Polyline> _createPolylines() {
+    return {
+      Polyline(
+        polylineId: PolylineId('route'),
+        points: [
+          LatLng(-26.232590, 28.240967), // Use your departure coordinates here
+          LatLng(-26.232590, 28.240967), // Use your destination coordinates here
+        ],
+        color: Colors.blue,
+        width: 5,
+      ),
+    };
   }
 }

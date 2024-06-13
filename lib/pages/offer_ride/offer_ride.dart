@@ -26,6 +26,8 @@ class _OfferRideTabState extends State<OfferRideTab> {
   int _availableSeats = 1;
   late GoogleMapController _googleMapController;
   Position? _currentPosition;
+    GoogleMapsService service = GoogleMapsService();
+
 
   static const _initialCameraPosition = CameraPosition(
     target: LatLng(-26.232590, 28.240967),
@@ -51,22 +53,74 @@ class _OfferRideTabState extends State<OfferRideTab> {
     }
   }
 
+  // Future<void> _offerRide() async {
+  //   GoogleMapsService service = GoogleMapsService();
+  //   if (_formKey.currentState!.validate()) {
+  //     final user = FirebaseAuth.instance.currentUser;
+  //     final liftRef = FirebaseFirestore.instance.collection('lifts').doc();
+  //
+  //     String destinationImageUrl = await service.getDestinationPhotoUrl(_destinationController.text);
+  //
+  //     final liftdata = Lift(
+  //       liftId: liftRef.id,
+  //       offeredBy: user!.uid,
+  //       departureLocation: _departureLocationController.text,
+  //       destinationLocation: _destinationController.text,
+  //       departureDateTime: _dateTime ?? DateTime.now(),
+  //       availableSeats: _availableSeats,
+  //       destinationImage: destinationImageUrl
+  //     );
+  //
+  //     if (_departureLocationController.text.isNotEmpty &&
+  //         _destinationController.text.isNotEmpty &&
+  //         _dateTime != null) {
+  //       try {
+  //         await liftRef.set(liftdata.toJson());
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('Ride offered successfully')),
+  //         );
+  //         _resetForm();
+  //       } catch (e) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('Failed to offer ride: $e')),
+  //         );
+  //       }
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Please fill in all fields')),
+  //       );
+  //     }
+  //
+  //   }
+  // }
   Future<void> _offerRide() async {
-    GoogleMapsService service = GoogleMapsService();
     if (_formKey.currentState!.validate()) {
       final user = FirebaseAuth.instance.currentUser;
       final liftRef = FirebaseFirestore.instance.collection('lifts').doc();
 
-      String destinationImageUrl = await service.getDestinationPhotoUrl(_destinationController.text);
+
+      String? departurePlaceId = await service.searchPlace(_departureLocationController.text);
+      String? destinationPlaceId = await service.searchPlace(_destinationController.text);
+
+
+      String destinationImageUrl = await service.getLocationPhoto(destinationPlaceId!);
+
+
+      GeoPoint departureCoordinates = await service.getLocationCoordinates(departurePlaceId!);
+      GeoPoint destinationCoordinates = await service.getLocationCoordinates(destinationPlaceId!);
 
       final liftdata = Lift(
         liftId: liftRef.id,
         offeredBy: user!.uid,
         departureLocation: _departureLocationController.text,
+        departureLat: departureCoordinates.latitude,
+        departureLng: departureCoordinates.longitude,
         destinationLocation: _destinationController.text,
+        destinationLat: destinationCoordinates.latitude,
+        destinationLng: destinationCoordinates.longitude,
         departureDateTime: _dateTime ?? DateTime.now(),
         availableSeats: _availableSeats,
-        destinationImage: destinationImageUrl
+        destinationImage: destinationImageUrl,
       );
 
       if (_departureLocationController.text.isNotEmpty &&
@@ -88,7 +142,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
           SnackBar(content: Text('Please fill in all fields')),
         );
       }
-
     }
   }
 

@@ -165,31 +165,6 @@ class _FindRideTabState extends State<FindRideTab> {
                         side: BorderSide(color: Colors.blueGrey, width: 2), // Bluish outline
                       ),
                     ),
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     DatePicker.showDateTimePicker(
-                    //       context,
-                    //       showTitleActions: true,
-                    //       minTime: DateTime.now(),
-                    //       maxTime: DateTime(2100, 12, 31),
-                    //       onChanged: (date) {
-                    //         print('change $date');
-                    //       },
-                    //       onConfirm: (date) {
-                    //         setState(() {
-                    //           _dateTime = date;
-                    //         });
-                    //       },
-                    //       currentTime: _dateTime ?? DateTime.now(),
-                    //       locale: LocaleType.en,
-                    //     );
-                    //   },
-                    //   child: Text(
-                    //     _dateTime == null
-                    //         ? 'Select Date and Time'
-                    //         : DateFormat('yyyy-MM-dd HH:mm').format(_dateTime!),
-                    //   ),
-                    // ),
 
                   ],
                 ),
@@ -251,14 +226,13 @@ class _FindRideTabState extends State<FindRideTab> {
                           ),
                           // color: Colors.grey,
                           child: ListTile(
-                          title: Text(ride['destinationLoaction']),
+                          title: Text(ride['destinationLocation']),
                           subtitle: Text(
-                            'Departure: ${ride['departureLoaction']} on ${DateFormat('yyyy-MM-dd').format(departureDateTime)}',
+                            'Departure: ${ride['departureLocation']} on ${DateFormat('yyyy-MM-dd').format(departureDateTime)}',
                           ),
                           trailing: Text(
                             'Available Seats: ${ride['availableSeats'].toString()}',
                           ),
-
                             leading: Container(
                               width: 50,
                               height: 50,
@@ -266,8 +240,7 @@ class _FindRideTabState extends State<FindRideTab> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 image: DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: NetworkImage(
-                                      'https://maps.googleapis.com/maps/api/staticmap?center=${ride['destinationLoaction']}&zoom=13&size=50x50&key=${dotenv.get("GOOGLE_CLOUD_MAP_ID")}'),
+                                  image: NetworkImage(ride['destinationImage']),
                                 ),
                               ),
                             ),
