@@ -161,6 +161,9 @@ class _FindRideTabState extends State<FindRideTab> {
                             ? 'Select Date'
                             : DateFormat('yyyy-MM-dd').format(_dateTime!),
                       ),
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(color: Colors.blueGrey, width: 2), // Bluish outline
+                      ),
                     ),
                     // ElevatedButton(
                     //   onPressed: () {
@@ -191,6 +194,8 @@ class _FindRideTabState extends State<FindRideTab> {
                   ],
                 ),
                 SizedBox(height: 16.0),
+
+
                 Positioned(
                   bottom: 16.0,
                   left: 0,
@@ -199,6 +204,9 @@ class _FindRideTabState extends State<FindRideTab> {
                     child: ElevatedButton.icon(
                       onPressed:_searchRides,
                       icon: ImageIcon(AssetImage('assets/icons/search.png')),
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(color: Colors.blueGrey, width: 2), // Bluish outline
+                      ),
                       label: Text('search ride'),
                     ),
                   ),

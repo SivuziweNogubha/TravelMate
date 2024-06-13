@@ -228,6 +228,9 @@ class _OfferRideTabState extends State<OfferRideTab> {
                                 ? 'Select Date and Time'
                                 : _dateTime.toString(),
                           ),
+                          style: ElevatedButton.styleFrom(
+                            side: BorderSide(color: Colors.blueGrey, width: 2), // Bluish outline
+                          ),
                         ),
                       ],
                     ),
@@ -272,6 +275,9 @@ class _OfferRideTabState extends State<OfferRideTab> {
                         child: ElevatedButton.icon(
                           onPressed: _offerRide,
                           icon: ImageIcon(AssetImage('assets/icons/car_passengers.png')),
+                          style: ElevatedButton.styleFrom(
+                            side: BorderSide(color: Colors.blueGrey, width: 2), // Bluish outline
+                          ),
                           label: Text('Offer Ride'),
                         ),
                       ),
