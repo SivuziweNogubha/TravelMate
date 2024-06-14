@@ -18,6 +18,9 @@ class LiftOfferViewModel extends ChangeNotifier {
     required String destinationLocation,
     required DateTime departureDateTime,
     required int availableSeats,
+    required double price,
+
+
   }) async {
     // Fetch the destination photo URL from the API
     String destinationImageUrl = await service.getDestinationPhotoUrl(destinationLocation);
@@ -39,6 +42,7 @@ class LiftOfferViewModel extends ChangeNotifier {
       destinationLng: destinationCoordinates.longitude,
       destinationImage: destinationImageUrl, // Include the destinationImage
       passengers: [],
+      price: price,
     );
 
     try {
@@ -55,6 +59,7 @@ class LiftOfferViewModel extends ChangeNotifier {
     required String destinationLocation,
     required DateTime departureDateTime,
     required int availableSeats,
+    required double price,
   }) async {
     // Fetch the destination photo URL from the API
     String destinationImageUrl = await service.getDestinationPhotoUrl(destinationLocation);
@@ -76,6 +81,7 @@ class LiftOfferViewModel extends ChangeNotifier {
       destinationLng: destinationCoordinates.longitude,
       destinationImage: destinationImageUrl, // Include the destinationImage
       passengers: [],
+      price: price,
     );
     try {
       await _liftRepository.updateLift(lift);

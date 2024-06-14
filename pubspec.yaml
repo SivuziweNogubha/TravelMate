@@ -108,6 +108,7 @@ flutter:
     - assets/icons/date_time.png
     - assets/icons/delete.png
     - assets/icons/TravelMate.png
+    - assets/icons/rands.png
     - assets/icons/search.png
     - assets/icons/logout.svg
     - assets/delete_icon.svg

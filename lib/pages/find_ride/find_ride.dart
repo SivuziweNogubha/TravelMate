@@ -262,6 +262,10 @@ class _FindRideTabState extends State<FindRideTab> {
                                       offeredByPhotoUrl: userData['photoURL'],
                                       destination: ride['destinationLocation'],
                                       departure: ride['departureLocation'],
+                                      price: ride['price'] as double,
+                                      liftId: ride['liftId'],
+                                      image: ride['destinationImage'],
+                                      seat: ride['availableSeats'],
                                     ),
                                   ),
                                 );
@@ -270,35 +274,6 @@ class _FindRideTabState extends State<FindRideTab> {
                                 print('User data not found');
                               }
                             },
-                          // onTap: () {
-                            // showDialog(
-                            //   context: context,
-                            //   builder: (BuildContext context) {
-                            //     return AlertDialog(
-                            //       title: Text('Confirm Booking'),
-                            //       content: Text('Do you want to book this lift?'),
-                            //       actions: <Widget>[
-                            //         TextButton(
-                            //           child: Text('Cancel'),
-                            //           onPressed: () {
-                            //             Navigator.of(context).pop();
-                            //           },
-                            //         ),
-                            //         TextButton(
-                            //           child: Text('Book'),
-                            //
-                            //           onPressed: () async {
-                            //             Navigator.of(context).pop();
-                            //             String mylift = liftId;
-                            //             String userId =
-                            //                 FirebaseAuth.instance.currentUser!.uid;
-                            //             await joinLift(mylift, userId);
-                            //           },
-                            //         ),
-                            //       ],
-                            //     );
-                            //   },
-                            // );
 
                           // },
                         ),

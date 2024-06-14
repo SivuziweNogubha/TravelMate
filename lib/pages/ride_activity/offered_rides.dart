@@ -69,7 +69,9 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                     ),
                   ),
                   title: Text(data['destinationLocation']),
-                  subtitle: Text('Departure: ${data['departureLocation']} on $formattedDateTime'),
+                  subtitle: Text('Departure: ${data['departureLocation']} on $formattedDateTime fare: R${data['price']}') ,
+
+
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

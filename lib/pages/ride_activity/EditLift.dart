@@ -20,13 +20,8 @@ class EditLiftScreen extends StatefulWidget {
 class _EditLiftScreenState extends State<EditLiftScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _departureLocationController;
-  late TextEditingController _depatureStreet;
-  late TextEditingController _depatureTown;
-
   late TextEditingController _destinationController;
-  late TextEditingController _destinationStreet;
-  late TextEditingController _destinationTown;
-
+  late TextEditingController _priceController;
 
   late DateTime _dateTime;
   int _availableSeats = 1;
@@ -34,43 +29,44 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
   @override
   void initState() {
     super.initState();
-    _departureLocationController =
-        TextEditingController(text: widget.initialLiftData['departureLoacation']);
-    _destinationController =
-        TextEditingController(text: widget.initialLiftData['destinationLoaction']);
+    _departureLocationController = TextEditingController(
+        text: widget.initialLiftData['departureLocation']);
+    _destinationController = TextEditingController(
+        text: widget.initialLiftData['destinationLocation']);
+    _priceController = TextEditingController(
+        text: widget.initialLiftData['price'].toString());
     _dateTime = widget.initialLiftData['departureDateTime'].toDate();
     _availableSeats = widget.initialLiftData['availableSeats'];
   }
-  //I NEED TO HAVE THIS LOGIC ON LIFTSVIEWMODEL
+
   final _viewModel = LiftsViewModel(LiftsRepository());
   GoogleMapsService service = GoogleMapsService();
 
-
-
   Future<void> _submitUpdate() async {
-    // final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    String destinationImageUrl = await service.getDestinationPhotoUrl(_destinationController.text);
-
-
-    GeoPoint departureCoordinates = await service.getLocationCoordinates(_departureLocationController.text);
-    GeoPoint destinationCoordinates = await service.getLocationCoordinates(_destinationController.text);
-
     if (_formKey.currentState!.validate()) {
-      final updatedLiftData = Lift( // Assuming Lift is your data structure class
-          departureLocation: _departureLocationController.text,
-          departureLat: departureCoordinates.latitude,
-          departureLng: departureCoordinates.longitude,
-          destinationLocation: _destinationController.text,
-          destinationLat: destinationCoordinates.latitude,
-          destinationLng: destinationCoordinates.longitude,
-          departureDateTime: _dateTime ?? DateTime.now(),
-          availableSeats: _availableSeats,
-          destinationImage: destinationImageUrl,
+      String destinationImageUrl =
+      await service.getDestinationPhotoUrl(_destinationController.text);
+
+      GeoPoint departureCoordinates =
+      await service.getLocationCoordinates(_departureLocationController.text);
+      GeoPoint destinationCoordinates =
+      await service.getLocationCoordinates(_destinationController.text);
+
+      final updatedLiftData = Lift(
         liftId: widget.liftId,
-        offeredBy:FirebaseAuth.instance.currentUser!.uid ,
+        offeredBy: FirebaseAuth.instance.currentUser!.uid,
+        departureLocation: _departureLocationController.text,
+        departureLat: departureCoordinates.latitude,
+        departureLng: departureCoordinates.longitude,
+        destinationLocation: _destinationController.text,
+        destinationLat: destinationCoordinates.latitude,
+        destinationLng: destinationCoordinates.longitude,
+        departureDateTime: _dateTime,
+        availableSeats: _availableSeats,
+        destinationImage: destinationImageUrl,
+        price: double.parse(_priceController.text),
       );
 
-      // Call updateLift method in ViewModel
       await _viewModel.updateLift(widget.liftId, updatedLiftData);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,8 +87,7 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
               TextFormField(
                 controller: _departureLocationController,
@@ -118,6 +113,22 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
                   return null;
                 },
               ),
+              TextFormField(
+                controller: _priceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Price (Rands)',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter a price';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+              ),
               SizedBox(height: 16.0),
               Row(
                 children: [
@@ -125,26 +136,25 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
                   SizedBox(width: 16.0),
                   ElevatedButton(
                     onPressed: () async {
-                      final pickedDateTime = await showDatePicker(
+                      final pickedDate = await showDatePicker(
                         context: context,
-                        initialDate: _dateTime ?? DateTime.now(),
+                        initialDate: _dateTime,
                         firstDate: DateTime.now(),
                         lastDate: DateTime(2100),
                       );
 
-                      if (pickedDateTime != null) {
+                      if (pickedDate != null) {
                         final pickedTime = await showTimePicker(
                           context: context,
-                          initialTime: TimeOfDay.fromDateTime(
-                              _dateTime ?? DateTime.now()),
+                          initialTime: TimeOfDay.fromDateTime(_dateTime),
                         );
 
                         if (pickedTime != null) {
                           setState(() {
                             _dateTime = DateTime(
-                              pickedDateTime.year,
-                              pickedDateTime.month,
-                              pickedDateTime.day,
+                              pickedDate.year,
+                              pickedDate.month,
+                              pickedDate.day,
                               pickedTime.hour,
                               pickedTime.minute,
                             );
@@ -153,9 +163,7 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
                       }
                     },
                     child: Text(
-                      _dateTime == null
-                          ? 'Select Date and Time'
-                          : _dateTime.toString(),
+                      _dateTime.toString(),
                     ),
                   ),
                 ],

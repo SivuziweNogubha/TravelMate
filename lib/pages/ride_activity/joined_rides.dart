@@ -170,8 +170,19 @@ class _JoinedRidesViewState extends State<JoinedRidesView> {
                   borderRadius: BorderRadius.circular(8.0), // Set the border radius if needed
                 ),
                 child: ListTile(
-                  title: Text(data['destinationLoaction']),
-                  subtitle: Text('Departure: ${data['departureLoaction']} on $formattedDateTime'),
+                  leading: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(data['destinationImage']),
+                      ),
+                    ),
+                  ),
+                  title: Text(data['destinationLocation']),
+                  subtitle: Text('Departure: ${data['departureLocation']} on $formattedDateTime'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

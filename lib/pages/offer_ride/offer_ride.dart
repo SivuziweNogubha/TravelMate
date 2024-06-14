@@ -22,6 +22,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
   final _formKey = GlobalKey<FormState>();
   final _departureLocationController = TextEditingController();
   final _destinationController = TextEditingController();
+final  _priceController = TextEditingController();
   DateTime? _dateTime;
   int _availableSeats = 1;
   late GoogleMapController _googleMapController;
@@ -81,6 +82,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
         departureDateTime: _dateTime ?? DateTime.now(),
         availableSeats: _availableSeats,
         destinationImage: destinationImageUrl,
+        price: double.tryParse(_priceController.text) ?? 0.0,
       );
 
       if (_departureLocationController.text.isNotEmpty &&
@@ -108,6 +110,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
   void _resetForm() {
     _departureLocationController.clear();
     _destinationController.clear();
+    _priceController.clear();
     setState(() {
       _dateTime = null;
       _availableSeats = 1;
@@ -276,10 +279,34 @@ class _OfferRideTabState extends State<OfferRideTab> {
                       ],
                     ),
                     SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _priceController,
+                      decoration: InputDecoration(
+                        labelText: 'Price',
+                        prefixIcon: ImageIcon(
+                          AssetImage('assets/icons/rands.png'), // Use the custom icon
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter a price';
+                        }
+                        if (double.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                    ),
                     // ElevatedButton(
                     //   onPressed: _offerRide,
                     //   child: Text('Offer Ride'),
                     // ),
+                    SizedBox(height: 16.0),
+
                     Positioned(
                       bottom: 16.0,
                       left: 0,
