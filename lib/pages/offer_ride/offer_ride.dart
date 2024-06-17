@@ -282,7 +282,7 @@ final  _priceController = TextEditingController();
                     TextFormField(
                       controller: _priceController,
                       decoration: InputDecoration(
-                        labelText: 'Price',
+                        labelText: '0.0',
                         prefixIcon: ImageIcon(
                           AssetImage('assets/icons/rands.png'), // Use the custom icon
                         ),

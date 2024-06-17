@@ -313,42 +313,42 @@ class _FindRideTabState extends State<FindRideTab> {
     });
   }
 
-  Future<void> joinLift(String liftId, String userId) async {
-    try {
-      DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
-      Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
-
-      int availableSeats = liftData['availableSeats'];
-      List<String> passengers = List<String>.from(liftData['passengers']);
-      if (availableSeats > 0) {
-        String bookingId = _firestore.collection('bookings').doc().id;
-        Booking booking = Booking(
-          bookingId: bookingId,
-          userId: userId,
-          liftId: liftId,
-          confirmed: true,
-        );
-        await _liftsRepository.createBooking(booking);
-
-        passengers.add(userId);
-        await _firestore.collection('lifts').doc(liftId).update({
-          'availableSeats': availableSeats - 1,
-          'passengers': passengers,
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lift booked successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No available seats left')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error booking lift: $e')),
-      );
-    }
-  }
+  // Future<void> joinLift(String liftId, String userId) async {
+  //   try {
+  //     DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
+  //     Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
+  //
+  //     int availableSeats = liftData['availableSeats'];
+  //     List<String> passengers = List<String>.from(liftData['passengers']);
+  //     if (availableSeats > 0) {
+  //       String bookingId = _firestore.collection('bookings').doc().id;
+  //       Booking booking = Booking(
+  //         bookingId: bookingId,
+  //         userId: userId,
+  //         liftId: liftId,
+  //         confirmed: true,
+  //       );
+  //       await _liftsRepository.createBooking(booking);
+  //
+  //       passengers.add(userId);
+  //       await _firestore.collection('lifts').doc(liftId).update({
+  //         'availableSeats': availableSeats - 1,
+  //         'passengers': passengers,
+  //       });
+  //
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Lift booked successfully')),
+  //       );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('No available seats left')),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error booking lift: $e')),
+  //     );
+  //   }
+  // }
 
 }

@@ -60,6 +60,8 @@ dependencies:
 #  datetime_picker_formfield: ^2.0.1
   http: ^1.2.1
   flutter_datetime_picker: ^1.5.1
+  stripe_payment: ^1.1.4
+  flutter_stripe: ^10.1.1
 
 
 
@@ -109,6 +111,9 @@ flutter:
     - assets/icons/delete.png
     - assets/icons/TravelMate.png
     - assets/icons/rands.png
+    - assets/icons/wallet.png
+    - assets/icons/settings.png
+    - assets/icons/mail.png
     - assets/icons/search.png
     - assets/icons/logout.svg
     - assets/delete_icon.svg
@@ -119,6 +124,7 @@ flutter:
     - assets/icons/reset.svg
     - assets/icons/date.png
     - assets/animations/loading.json
+    - assets/animations/wallet.json
     - assets/animations/lift.json
     - assets/animations/loading2.json
     - assets/animations/find_ride.json

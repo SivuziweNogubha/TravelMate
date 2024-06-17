@@ -7,6 +7,7 @@ import '../../main.dart';
 import '../../model/BookingModel.dart';
 import '../../model/lift.dart';
 import '../../repository/lifts_repository.dart';
+import '../../repository/wallet_repo.dart';
 import '../../utils/important_constants.dart';
 import 'Map.dart';
 
@@ -43,15 +44,86 @@ class ConfirmRidePage extends StatelessWidget {
     double midLongitude = (departureLocation.longitude + destinationLocation.longitude) / 2;
     double adjustedMidLatitude = midLatitude + 0.0050;
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final WalletRepository _walletRepository = WalletRepository();
+    final LiftsRepository _liftsRepository = LiftsRepository();
 
-    Future<void> joinLift(String liftId, String userId) async {
+    // Future<void> joinLift(String liftId, String userId) async {
+    //   try {
+    //     DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
+    //     Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
+    //
+    //     int availableSeats = liftData['availableSeats'];
+    //     List<String> passengers = List<String>.from(liftData['passengers']);
+    //     if (availableSeats > 0) {
+    //       String bookingId = _firestore.collection('bookings').doc().id;
+    //       Booking booking = Booking(
+    //         bookingId: bookingId,
+    //         userId: userId,
+    //         liftId: liftId,
+    //         confirmed: true,
+    //       );
+    //       final _liftsRepository = LiftsRepository();
+    //
+    //       await _liftsRepository.createBooking(booking);
+    //
+    //       passengers.add(userId);
+    //       await _firestore.collection('lifts').doc(liftId).update({
+    //         'availableSeats': availableSeats - 1,
+    //         'passengers': passengers,
+    //       });
+    //
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(content: Text('Lift booked successfully')),
+    //       );
+    //     } else {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(content: Text('No available seats left')),
+    //       );
+    //     }
+    //   } catch (e) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Error booking lift: $e')),
+    //     );
+    //   }
+    // }
+
+    Future<void> joinLift(BuildContext context, String liftId, String userId) async {
       try {
+        // Check if the user has a wallet
+        bool hasWallet = await _walletRepository.userHasWallet(userId);
+        if (!hasWallet) {
+          // Create a wallet if the user doesn't have one
+          await _walletRepository.createWallet(userId);
+        }
+
+        // Fetch the lift data
         DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
         Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
 
+        // Get available seats and passengers list
         int availableSeats = liftData['availableSeats'];
         List<String> passengers = List<String>.from(liftData['passengers']);
+
+        // Fetch the cost of the lift (assuming it's stored in the lift data)
+        double liftCost = liftData['price'];
+
+        // Fetch the user's wallet balance
+        double userBalance = await _walletRepository.getWalletBalance(userId);
+
+        // Check if the user has enough funds
+        if (userBalance < liftCost) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Insufficient funds to join the lift')),
+          );
+          return;
+        }
+
+        // Check if there are available seats
         if (availableSeats > 0) {
+          // Deduct the cost from the user's wallet balance
+          await _walletRepository.updateWalletBalance(userId, -liftCost);
+
+          // Create a booking
           String bookingId = _firestore.collection('bookings').doc().id;
           Booking booking = Booking(
             bookingId: bookingId,
@@ -59,16 +131,16 @@ class ConfirmRidePage extends StatelessWidget {
             liftId: liftId,
             confirmed: true,
           );
-          final _liftsRepository = LiftsRepository();
-
           await _liftsRepository.createBooking(booking);
 
+          // Update the lift data
           passengers.add(userId);
           await _firestore.collection('lifts').doc(liftId).update({
             'availableSeats': availableSeats - 1,
             'passengers': passengers,
           });
 
+          // Notify the user of the successful booking
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Lift booked successfully')),
           );
@@ -85,7 +157,7 @@ class ConfirmRidePage extends StatelessWidget {
     }
 
 
-    Material confirmride(String liftId){
+    Material confirmride(String liftId,BuildContext context){
       return Material(
         elevation: 4,
         borderRadius: BorderRadius.circular(30),
@@ -94,7 +166,7 @@ class ConfirmRidePage extends StatelessWidget {
           onPressed: () async {
             String mylift = liftId;
             String userId = FirebaseAuth.instance.currentUser!.uid;
-            await joinLift(mylift, userId);
+            await joinLift(context,mylift, userId);
           },
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           minWidth: MediaQuery.of(context).size.width,
@@ -268,7 +340,7 @@ class ConfirmRidePage extends StatelessWidget {
                           Text('Trip fare: R$price'),
                           SizedBox(height: 8.0),
                           SizedBox(height: 16.0),
-                          confirmride(liftId),
+                          confirmride(liftId,context),
                         ],
                       ),
                     ),

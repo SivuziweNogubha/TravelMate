@@ -9,6 +9,7 @@ import 'package:lifts_app/home_page.dart';
 import 'package:lifts_app/pages/home.dart';
 import 'package:lifts_app/pages/onboarding/registration_screen.dart';
 import 'package:lifts_app/pages/onboarding/reset_password.dart';
+import 'package:lifts_app/src/firebase_authentication.dart';
 import 'package:lifts_app/utils/important_constants.dart';
 
 import '../../model/user_model.dart';
@@ -90,44 +91,6 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
     }
   }
 
-  //NEED TO MOVE THIS LOGIC TO THE AUTHENTICATION PACKAGE
-  Future<User?> signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    try {
-      await googleSignIn.signOut(); // Signing out any existing user before signing in
-
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        UserCredential userCredential = await _auth.signInWithCredential(credential);
-
-        String uid = userCredential.user!.uid;
-        DocumentSnapshot doc = await _firestore.collection("users").doc(uid).get();
-
-        if (!doc.exists) {
-          await _firestore.collection("users").doc(uid).set({
-            "uid": uid,
-            "name": googleUser.displayName,
-            "email": googleUser.email,
-            "profilePhoto": googleUser.photoUrl ?? AppValues.defaultUserImg,
-            "cash": 0.0
-          });
-        }
-      }
-
-      return _auth.currentUser;
-    } catch (e) {
-      throw Exception('An error occurred while signing in with Google.');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -408,5 +371,44 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
         ),
       ),
     );
+  }
+
+
+  Future<User?> signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    try {
+      await googleSignIn.signOut(); // Signing out any existing user before signing in
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential userCredential = await _auth.signInWithCredential(credential);
+
+        String uid = userCredential.user!.uid;
+        DocumentSnapshot doc = await _firestore.collection("users").doc(uid).get();
+
+        if (!doc.exists) {
+          await _firestore.collection("users").doc(uid).set({
+            "uid": uid,
+            "name": googleUser.displayName,
+            "email": googleUser.email,
+            "profilePhoto": googleUser.photoUrl ?? AppValues.defaultUserImg,
+            "cash": 0.0,
+          });
+        }
+      }
+
+      return _auth.currentUser;
+    } catch (e) {
+      throw Exception('An error occurred while signing in with Google.');
+    }
   }
 }
