@@ -228,15 +228,15 @@ class _FindRideTabState extends State<FindRideTab> {
                           // color: Colors.grey,
                           child: ListTile(
                           title: Text(ride['destinationLocation']),
-                          subtitle: Text(
-                            'Departure: ${ride['departureLocation']} on ${DateFormat('yyyy-MM-dd').format(departureDateTime)}',
-                          ),
-                          trailing: Text(
-                            'Available Seats: ${ride['availableSeats'].toString()}',
-                          ),
+                          // subtitle: Text(
+                          //   'Departure: ${ride['departureLocation']} on ${DateFormat('yyyy-MM-dd').format(departureDateTime)}',
+                          // ),
+                          // trailing: Text(
+                          //   'Available Seats: ${ride['availableSeats'].toString()}',
+                          // ),
                             leading: Container(
-                              width: 50,
-                              height: 50,
+                              width: 100,
+                              height: 100,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8.0),
                                 image: DecorationImage(

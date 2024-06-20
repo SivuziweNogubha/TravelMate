@@ -1234,9 +1234,9 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                           right: 8,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => WalletPage()),
-                              );
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(builder: (context) => WalletPage()),
+                              // );
                             },
                             child: ImageIcon(
                               AssetImage('assets/icons/settings.png'),

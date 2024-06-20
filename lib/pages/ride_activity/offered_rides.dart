@@ -40,8 +40,32 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           _isLoading = false;
+
+
+          DateTime now = DateTime.now();
+          List<DocumentSnapshot> validLifts = snapshot.data!.docs.where((DocumentSnapshot document) {
+            Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+            Timestamp departureTimestamp = data['departureDateTime'];
+            DateTime departureDateTime = departureTimestamp.toDate();
+            return departureDateTime.isAfter(now);
+          }).toList();
+
+          if (validLifts.isEmpty) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomLoadingAnimation(
+                  animationPath: 'assets/animations/no_data.json',
+                  width: 200,
+                  height: 200,
+                ), // Show custom animation for no data
+                SizedBox(height: 20),
+              ],
+            );
+          }
+
           return ListView(
-            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+            children: validLifts.map((DocumentSnapshot document) {
               Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
               Timestamp departureTimestamp = data['departureDateTime'];
               DateTime departureDateTime = departureTimestamp.toDate();
@@ -64,14 +88,14 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                       borderRadius: BorderRadius.circular(8.0),
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: NetworkImage(data['destinationImage']),
+                        image: data['destinationImage'] != null && data['destinationImage'].isNotEmpty
+                            ? NetworkImage(data['destinationImage'])
+                            : AssetImage('assets/logo.png') as ImageProvider,
                       ),
                     ),
                   ),
                   title: Text(data['destinationLocation']),
-                  subtitle: Text('Departure: ${data['departureLocation']} on $formattedDateTime fare: R${data['price']}') ,
-
-
+                  subtitle: Text('Departure: ${data['departureLocation']} on $formattedDateTime fare: R${data['price']}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

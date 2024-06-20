@@ -299,7 +299,7 @@ class GoogleMapsService {
 
     String? response = await fetchPlace(uri);
     if (response != null) {
-      print("API Response: $response"); // Log the full response
+      print("API Response: $response");
 
       Map<String, dynamic> jsonResponse = json.decode(response);
 
@@ -330,17 +330,21 @@ class GoogleMapsService {
 
     String? response = await fetchPlace(uri);
     if (response != null) {
-      // Parse the JSON response
       Map<String, dynamic> jsonResponse = json.decode(response);
 
       if (jsonResponse["status"] == "OK") {
-        // Get the first photo reference
-        List<dynamic> photos = jsonResponse["result"]["photos"];
-        if (photos.isNotEmpty) {
-          String firstPhotoReference = photos[0]["photo_reference"];
-          return firstPhotoReference;
+        if (jsonResponse["result"] != null &&
+            jsonResponse["result"]["photos"] != null &&
+            jsonResponse["result"]["photos"] is List) {
+          List<dynamic> photos = jsonResponse["result"]["photos"];
+          if (photos.isNotEmpty) {
+            String firstPhotoReference = photos[0]["photo_reference"];
+            return firstPhotoReference;
+          } else {
+            return 'assets/logo.png';
+          }
         } else {
-          throw Exception("No photos available for this location");
+          return 'assets/logo.png';
         }
       } else {
         throw Exception("Failed to fetch location details");
@@ -371,28 +375,6 @@ class GoogleMapsService {
     return dotenv.env['GOOGLE_CLOUD_MAP_ID'] ?? '';
   }
 
-  // Future<String> getLocationPhoto(String placeId) async {
-  //   Uri uri = Uri.https(
-  //     "maps.googleapis.com",
-  //     "maps/api/place/photo",
-  //     {
-  //       "maxwidth": "400",
-  //       "photoreference": placeId,
-  //       "key": dotenv.get("GOOGLE_CLOUD_MAP_ID"),
-  //     },
-  //   );
-  //
-  //   try {
-  //     final response = await http.get(uri);
-  //     if (response.statusCode == 200) {
-  //       return response.body;
-  //     } else {
-  //       throw Exception("Failed to fetch location photo");
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
 
   Future<String> getDestinationPhotoUrl(String destination) async {
     final apiKey = dotenv.env['GOOGLE_CLOUD_MAP_ID'] ?? '';
@@ -411,21 +393,7 @@ class GoogleMapsService {
     return url.toString();
   }
 
-  // Future<String> getLocationPhoto(String placeId) async {
-  //   String photoReference = await getLocationPhotoReference(placeId);
-  //
-  //   Uri uri = Uri.https(
-  //     "maps.googleapis.com",
-  //     "maps/api/place/photo",
-  //     {
-  //       "maxwidth": "400",
-  //       "photo_reference": photoReference,
-  //       "key": dotenv.get("ANDROID_FIREBASE_API_KEY"),
-  //     },
-  //   );
-  //
-  //   return uri.toString();
-  // }
+
 }
 
 

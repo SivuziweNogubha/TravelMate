@@ -60,8 +60,8 @@ dependencies:
 #  datetime_picker_formfield: ^2.0.1
   http: ^1.2.1
   flutter_datetime_picker: ^1.5.1
-  stripe_payment: ^1.1.4
-  flutter_stripe: ^10.1.1
+#  stripe_payment: ^1.1.4
+#  flutter_stripe: ^10.1.1
 
 
 
@@ -123,6 +123,8 @@ flutter:
     - assets/icons/hike.png
     - assets/icons/reset.svg
     - assets/icons/date.png
+    - assets/mapTheme/retro_theme.json
+    - assets/mapTheme/dark.json
     - assets/animations/loading.json
     - assets/animations/wallet.json
     - assets/animations/lift.json
