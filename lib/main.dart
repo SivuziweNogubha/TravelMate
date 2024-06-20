@@ -10,9 +10,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:lifts_app/repository/lifts_repository.dart';
-import 'package:lifts_app/view_models/profile_view_model.dart';
+import 'package:lifts_app/view_models/profile_view_model.dart' ;
+import 'package:lifts_app/view_models/ride_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:lifts_app/model/lifts_view_model.dart';
+import 'package:lifts_app/model/lifts_view_model.dart'as viewnodel;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'model/user_provider.dart';
@@ -66,13 +67,14 @@ Future<void> main() async {
         Provider<LiftsRepository>( // Provide LiftsRepository
           create: (context) => LiftsRepository(),
         ),
-        ChangeNotifierProvider( // Inject LiftsRepository into LiftsViewModel
-          create: (context) => LiftsViewModel(Provider.of<LiftsRepository>(context)),
-        ),
+        // ChangeNotifierProvider( // Inject LiftsRepository into LiftsViewModel
+        //   create: (context) => viewnodel.LiftsViewModel(Provider.of<LiftsRepository>(context)),
+        //
+        // ),
         if (userId != null)
           ChangeNotifierProvider(create: (_) => ProfileViewModel(userId)),
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        // ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => LiftsViewModel()),
         // Add the ProfileViewModel provider
 
         // Add other providers here if needed

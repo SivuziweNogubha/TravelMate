@@ -110,29 +110,63 @@ GoogleMap googleMap(
     ),
   );
 
-  LatLng center = LatLng(
-    bounds.southwest.latitude + (bounds.northeast.latitude - bounds.southwest.latitude) / 2,
-    bounds.southwest.longitude + (bounds.northeast.longitude - bounds.southwest.longitude) / 2,
-  );
+  if (bounds.southwest.latitude <= bounds.northeast.latitude) {
+    LatLng center = LatLng(
+      bounds.southwest.latitude +
+          (bounds.northeast.latitude - bounds.southwest.latitude) / 2,
+      bounds.southwest.longitude +
+          (bounds.northeast.longitude - bounds.southwest.longitude) / 2,
+    );
 
-  double zoomLevel = 10.4;
-  if (constraints.maxHeight > 500) {
-    zoomLevel = 14.0;
-  } else if (constraints.maxHeight > 300) {
-    zoomLevel = 5.0;
+    double zoomLevel = 10.4;
+    if (constraints.maxHeight > 500) {
+      zoomLevel = 14.0;
+    } else if (constraints.maxHeight > 300) {
+      zoomLevel = 5.0;
+    }
+
+    return GoogleMap(
+      mapType: MapType.normal,
+      cloudMapId: dotenv.get("GOOGLE_CLOUD_MAP_ID"),
+      zoomControlsEnabled: false,
+      myLocationButtonEnabled: true,
+      initialCameraPosition: CameraPosition(
+        target: center,
+        zoom: zoomLevel,
+      ),
+      markers: markers,
+      polylines: polylines,
+      style: mapStyle,
+    );
+  } else {
+    // Handle the case where southwest latitude is greater than northeast latitude
+    // For example, you can swap the latitude values and recalculate the center
+    LatLng center = LatLng(
+      bounds.northeast.latitude +
+          (bounds.southwest.latitude - bounds.northeast.latitude) / 2,
+      bounds.southwest.longitude +
+          (bounds.northeast.longitude - bounds.southwest.longitude) / 2,
+    );
+
+    double zoomLevel = 10.4;
+    if (constraints.maxHeight > 500) {
+      zoomLevel = 14.0;
+    } else if (constraints.maxHeight > 300) {
+      zoomLevel = 5.0;
+    }
+
+    return GoogleMap(
+      mapType: MapType.normal,
+      cloudMapId: dotenv.get("GOOGLE_CLOUD_MAP_ID"),
+      zoomControlsEnabled: false,
+      myLocationButtonEnabled: true,
+      initialCameraPosition: CameraPosition(
+        target: center,
+        zoom: zoomLevel,
+      ),
+      markers: markers,
+      polylines: polylines,
+      style: mapStyle,
+    );
   }
-
-  return GoogleMap(
-    mapType: MapType.normal,
-    cloudMapId: dotenv.get("GOOGLE_CLOUD_MAP_ID"),
-    zoomControlsEnabled: false,
-    myLocationButtonEnabled: true,
-    initialCameraPosition: CameraPosition(
-      target: center,
-      zoom: zoomLevel,
-    ),
-    markers: markers,
-    polylines: polylines,
-    style: mapStyle,
-  );
 }

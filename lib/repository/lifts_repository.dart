@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lifts_app/model/wallet.dart';
+import 'package:lifts_app/repository/wallet_repo.dart';
 import 'package:logger/logger.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +14,29 @@ import '../model/lift.dart';
 class LiftsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   var logger = Logger();
+
+  Stream<QuerySnapshot> getJoinedLifts(String userId) {
+    return _firestore
+        .collection('lifts')
+        .where('passengers', arrayContains: userId)
+        .snapshots();
+  }
+
+  Future<void> cancelLift(String liftId, String userId) async {
+    DocumentReference liftDoc = _firestore.collection('lifts').doc(liftId);
+
+    await liftDoc.update({
+      'passengers': FieldValue.arrayRemove([userId]),
+      'liftStatus': 'cancelled',
+    });
+
+    await liftDoc.update({
+      'availableSeats': FieldValue.increment(1)
+    });
+  }
+
+
+
 
   Future<void> createLift(Lift lift) async {
     await _firestore.collection('lifts').add(lift.toJson());
@@ -46,14 +71,14 @@ class LiftsRepository {
     }
   }
 
-  Future<void> cancelLift(String liftId) async {
-    await _firestore.collection('lifts').doc(liftId).update({
-      'liftStatus': 'cancelled',
-    });
-  }
+  // Future<void> cancelLift(String liftId) async {
+  //   await _firestore.collection('lifts').doc(liftId).update({
+  //     'liftStatus': 'cancelled',
+  //   });
+  // }
 
 
-  /// Deletes an existing Lift document from Firestore
+
   Future<void> deleteLift(String liftId) async {
     try {
       await _firestore.collection('lifts').doc(liftId).delete();
@@ -64,26 +89,6 @@ class LiftsRepository {
     }
   }
 
-
-  Future<List<Map<String, dynamic>>> fetchAvailableRides(
-      String destination, DateTime dateTime) async {
-    try {
-      final querySnapshot = await _firestore
-          .collection('lifts')
-          .where('destinationLocation', isEqualTo: destination)
-          .where('departureDateTime', isGreaterThanOrEqualTo: dateTime)
-          .get();
-
-      final availableRides = querySnapshot.docs
-          .map((docSnapshot) => docSnapshot.data())
-          .toList();
-
-      return availableRides;
-    } catch (error) {
-      logger.e('Error fetching available rides: $error');
-      return [];
-    }
-  }
   Future<List<DocumentSnapshot>> searchRides(
       String destination, DateTime selectedDate, String currentUserId) async {
     Query query = _firestore.collection('lifts')
@@ -96,38 +101,93 @@ class LiftsRepository {
     return querySnapshot.docs;
   }
 
-  Future<void> joinLift(String liftId, String userId) async {
-    DocumentReference liftDoc = _firestore.collection('lifts').doc(liftId);
 
-    await liftDoc.update({
-      'passengers': FieldValue.arrayUnion([userId])
-    });
+  // Future<void> joinLift(String liftId, String userId) async {
+  //   DocumentReference liftDoc = _firestore.collection('lifts').doc(liftId);
+  //
+  //   await liftDoc.update({
+  //     'passengers': FieldValue.arrayUnion([userId])
+  //   });
+  //
+  //
+  //   await liftDoc.update({'availableSeats': FieldValue.increment(-1)});
+  //
+  //   DocumentReference userDoc = _firestore.collection('users').doc(userId);
+  //
+  //   await userDoc.update({
+  //     'confirmedLifts': FieldValue.arrayUnion([liftId])
+  //   });
+  // }
+  Future<void> joinLift(BuildContext context, String liftId, String userId,WalletRepository _walletRepository) async {
+    try {
+      // Check if the user has a wallet
+      bool hasWallet = await _walletRepository.userHasWallet(userId);
+      if (!hasWallet) {
+        // Create a wallet if the user doesn't have one
+        await _walletRepository.createWallet(userId);
+      }
 
-    await liftDoc.update({'availableSeats': FieldValue.increment(-1)});
+      // Fetch the lift data
+      DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
+      Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
 
-    DocumentReference userDoc = _firestore.collection('users').doc(userId);
+      // Get available seats and passengers list
+      int availableSeats = liftData['availableSeats'];
+      List<String> passengers = List<String>.from(liftData['passengers']);
 
-    await userDoc.update({
-      'confirmedLifts': FieldValue.arrayUnion([liftId])
-    });
+      // Fetch the cost of the lift (assuming it's stored in the lift data)
+      double liftCost = liftData['price'];
+
+      // Fetch the user's wallet balance
+      // double userBalance = await _walletRepository.getWalletBalance(userId);
+
+      // // Check if the user has enough funds
+      // if (userBalance < liftCost) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content: Text('Insufficient funds to join the lift')),
+      //   );
+      //   return;
+      // }
+
+      // Check if there are available seats
+      if (availableSeats > 0) {
+        // Deduct the cost from the user's wallet balance
+        await _walletRepository.updateWalletBalance(userId, -liftCost);
+
+        // Create a booking
+        String bookingId = _firestore.collection('bookings').doc().id;
+        Booking booking = Booking(
+          bookingId: bookingId,
+          userId: userId,
+          liftId: liftId,
+          confirmed: true,
+        );
+        await createBooking(booking);
+
+        // Update the lift data
+        passengers.add(userId);
+        await _firestore.collection('lifts').doc(liftId).update({
+          'availableSeats': availableSeats - 1,
+          'passengers': passengers,
+        });
+
+        // Notify the user of the successful booking
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lift booked successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No available seats left')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error booking lift: $e')),
+      );
+    }
   }
 
-  // Future<List<Lift>> searchLifts(String pickupLocation, String destinationLocation) async {
-  //   try {
-  //     var querySnapshot = await _firestore
-  //         .collection("lifts")
-  //         .where("pickupLocation", isEqualTo: pickupLocation)
-  //         .where("destinationLocation", isEqualTo: destinationLocation)
-  //         .get();
-  //
-  //     return querySnapshot.docs.map((doc) {
-  //       final data = doc.data() as Map<String, dynamic>;
-  //       return Lift.fromJson(data);
-  //     }).toList();
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
+
   Future<void> deleteUserData(String userId) async {
     try {
       final bookingsCollection = _firestore.collection("bookings");
@@ -165,14 +225,6 @@ class LiftsRepository {
   }
 
 
-  // Future<void> createBooking(Booking booking) async {
-  //   try {
-  //     await _firestore.collection('bookings').add(booking.toJson());
-  //     logger.i('Booking created with ID: ${booking.bookingId}');
-  //   } catch (error) {
-  //     logger.e('Error creating booking: $error');
-  //   }
-  // }
 
   Future<void> createBooking(Booking booking) async {
     try {

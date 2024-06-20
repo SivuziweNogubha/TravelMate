@@ -1,21 +1,15 @@
 import 'dart:ui';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_webservice/directions.dart' as DirectionsService;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/directions.dart' as directions;
-import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
-
 import '../../main.dart';
-import '../../model/BookingModel.dart';
 import '../../model/lift.dart';
 import '../../repository/lifts_repository.dart';
 import '../../repository/wallet_repo.dart';
-import '../../utils/important_constants.dart';
 import 'Map.dart';
 
 class ConfirmRidePage extends StatefulWidget {
@@ -93,14 +87,13 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
         for (var route in response!.routes) {
           for (var leg in route.legs) {
             for (var step in leg.steps) {
-              String encodedPoints = step.polyline.points; // Get the encoded polyline points
-              List<LatLng> decodedPoints = decodeEncodedPolyline(encodedPoints); // Decode the points
-              points.addAll(decodedPoints); // Add decoded points to the list
+              String encodedPoints = step.polyline.points;
+              List<LatLng> decodedPoints = decodeEncodedPolyline(encodedPoints);
+              points.addAll(decodedPoints);
             }
           }
         }
 
-        // Print the decoded points to check if they are correct
         print('Decoded Points: $points');
 
         if (points.isNotEmpty) {
@@ -196,7 +189,6 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
       100.0,
     );
 
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final WalletRepository _walletRepository = WalletRepository();
     final LiftsRepository _liftsRepository = LiftsRepository();
     late DirectionsService.GoogleMapsDirections _directions;
@@ -208,76 +200,6 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
     //   super.initState();
     //   _directions = DirectionsService.GoogleMapsDirections(apiKey: dotenv.get("ANDROID_FIREBASE_API_KEY"));
     // }
-
-    Future<void> joinLift(BuildContext context, String liftId, String userId) async {
-      try {
-        // Check if the user has a wallet
-        bool hasWallet = await _walletRepository.userHasWallet(userId);
-        if (!hasWallet) {
-          // Create a wallet if the user doesn't have one
-          await _walletRepository.createWallet(userId);
-        }
-
-        // Fetch the lift data
-        DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
-        Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
-
-        // Get available seats and passengers list
-        int availableSeats = liftData['availableSeats'];
-        List<String> passengers = List<String>.from(liftData['passengers']);
-
-        // Fetch the cost of the lift (assuming it's stored in the lift data)
-        double liftCost = liftData['price'];
-
-        // Fetch the user's wallet balance
-        double userBalance = await _walletRepository.getWalletBalance(userId);
-
-        // Check if the user has enough funds
-        if (userBalance < liftCost) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Insufficient funds to join the lift')),
-          );
-          return;
-        }
-
-        // Check if there are available seats
-        if (availableSeats > 0) {
-          // Deduct the cost from the user's wallet balance
-          await _walletRepository.updateWalletBalance(userId, -liftCost);
-
-          // Create a booking
-          String bookingId = _firestore.collection('bookings').doc().id;
-          Booking booking = Booking(
-            bookingId: bookingId,
-            userId: userId,
-            liftId: liftId,
-            confirmed: true,
-          );
-          await _liftsRepository.createBooking(booking);
-
-          // Update the lift data
-          passengers.add(userId);
-          await _firestore.collection('lifts').doc(liftId).update({
-            'availableSeats': availableSeats - 1,
-            'passengers': passengers,
-          });
-
-          // Notify the user of the successful booking
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lift booked successfully')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('No available seats left')),
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error booking lift: $e')),
-        );
-      }
-    }
-
 
 
     Future<BitmapDescriptor> customMarkerIcon(String label) async {
@@ -342,7 +264,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
           onPressed: () async {
             String mylift = liftId;
             String userId = FirebaseAuth.instance.currentUser!.uid;
-            await joinLift(context, mylift, userId);
+            await _liftsRepository.joinLift(context, mylift, userId,_walletRepository);
           },
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           minWidth: MediaQuery.of(context).size.width,

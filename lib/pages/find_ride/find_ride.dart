@@ -65,13 +65,6 @@ class _FindRideTabState extends State<FindRideTab> {
     }
   }
 
-  // void _getDestinationImage(String placeId) async {
-  //   String photoUrl = await _mapsService.getLocationPhoto(placeId);
-  //   // Use the photoUrl to display the destination image
-  //   print("Photo URL: $photoUrl");
-  // }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -228,12 +221,6 @@ class _FindRideTabState extends State<FindRideTab> {
                           // color: Colors.grey,
                           child: ListTile(
                           title: Text(ride['destinationLocation']),
-                          // subtitle: Text(
-                          //   'Departure: ${ride['departureLocation']} on ${DateFormat('yyyy-MM-dd').format(departureDateTime)}',
-                          // ),
-                          // trailing: Text(
-                          //   'Available Seats: ${ride['availableSeats'].toString()}',
-                          // ),
                             leading: Container(
                               width: 100,
                               height: 100,
@@ -246,7 +233,6 @@ class _FindRideTabState extends State<FindRideTab> {
                               ),
                             ),
                             onTap: () async {
-                              // Fetch user details from Firestore based on the offeredBy field
                               DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(ride['offeredBy']).get();
 
                               if (userSnapshot.exists) {
@@ -312,43 +298,5 @@ class _FindRideTabState extends State<FindRideTab> {
       _isLoading = false;
     });
   }
-
-  // Future<void> joinLift(String liftId, String userId) async {
-  //   try {
-  //     DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
-  //     Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
-  //
-  //     int availableSeats = liftData['availableSeats'];
-  //     List<String> passengers = List<String>.from(liftData['passengers']);
-  //     if (availableSeats > 0) {
-  //       String bookingId = _firestore.collection('bookings').doc().id;
-  //       Booking booking = Booking(
-  //         bookingId: bookingId,
-  //         userId: userId,
-  //         liftId: liftId,
-  //         confirmed: true,
-  //       );
-  //       await _liftsRepository.createBooking(booking);
-  //
-  //       passengers.add(userId);
-  //       await _firestore.collection('lifts').doc(liftId).update({
-  //         'availableSeats': availableSeats - 1,
-  //         'passengers': passengers,
-  //       });
-  //
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Lift booked successfully')),
-  //       );
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('No available seats left')),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error booking lift: $e')),
-  //     );
-  //   }
-  // }
 
 }
