@@ -210,17 +210,6 @@ class _EditLiftScreenState extends State<EditLiftScreen> {
 
   Future<void> _submitUpdate() async {
     if (_formKey.currentState!.validate()) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return CustomLoadingAnimation(animationPath: 'assets/animations/loading.json');
-        },
-      );
-
-      // Simulate a delay for loading animation
-      await Future.delayed(Duration(seconds: 3));
-
       try {
         String? departurePlaceId = await service.searchPlace(_departureLocationController.text);
         String? destinationPlaceId = await service.searchPlace(_destinationController.text);

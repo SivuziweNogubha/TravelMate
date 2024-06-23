@@ -1071,8 +1071,6 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                                     color: Colors.white,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.none,
-                                    fontFamily: 'Aeonik',
                                   ),
                                 ),
                               ],
@@ -1126,9 +1124,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      decoration: TextDecoration.none,
-                                      fontFamily: 'Aeonik',
+
                                     ),
                                   )
                                 ],
@@ -1169,8 +1165,6 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                                       color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
-                                      decoration: TextDecoration.none,
-                                      fontFamily: 'Aeonik',
                                     ),
                                   )
                                 ],
@@ -1212,9 +1206,6 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      decoration: TextDecoration.none,
-                                      fontFamily: 'Aeonik',
                                     ),
                                   )
                                 ],
@@ -1233,8 +1224,8 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                               // );
                             },
                             child: ImageIcon(
-                              AssetImage('assets/icons/settings.png'),
-                              size: 24.0,
+                              AssetImage('assets/icons/wallet.png'),
+                              size: 55.0,
                               color: Colors.white,
                             ),
                           ),

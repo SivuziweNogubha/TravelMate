@@ -350,6 +350,7 @@ import '../../model/lift.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../utils/important_constants.dart';
+import '../widgets/loading_animation.dart';
 
 class OfferRideTab extends StatefulWidget {
   @override
@@ -396,6 +397,18 @@ class _OfferRideTabState extends State<OfferRideTab> {
 
   Future<void> _offerRide() async {
     if (_formKey.currentState!.validate()) {
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CustomLoadingAnimation(animationPath: 'assets/animations/loading.json');
+        },
+      );
+
+      // Simulate a delay for loading animation
+      await Future.delayed(Duration(seconds: 3));
+
       final user = FirebaseAuth.instance.currentUser;
       final liftRef = FirebaseFirestore.instance.collection('lifts').doc();
 
@@ -526,34 +539,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
     );
   }
 
-  // Widget _buildAutoCompleteTextField({required TextEditingController controller, required String hintText, required String icon}) {
-  //   return GooglePlaceAutoCompleteTextField(
-  //     textStyle: TextStyle(color: Colors.white),
-  //     textEditingController: controller,
-  //     googleAPIKey: dotenv.env['GOOGLE_CLOUD_MAP_ID']!,
-  //     inputDecoration: InputDecoration(
-  //       prefixIcon: ImageIcon(
-  //         AssetImage(icon),
-  //         size: 24,
-  //         color: Colors.white,
-  //       ),
-  //       contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-  //       hintText: hintText,
-  //       hintStyle: TextStyle(color: Colors.white),
-  //       border: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //       ),
-  //     ),
-  //     countries: ["za"],
-  //     isLatLngRequired: true,
-  //     getPlaceDetailWithLatLng: (prediction) {
-  //       print("placeDetails: ${prediction.lng}");
-  //     },
-  //     itemClick: (prediction) {
-  //       controller.text = prediction.description!;
-  //     },
-  //   );
-  // }
   Widget _buildAutoCompleteTextField({
     required TextEditingController controller,
     required String hintText,

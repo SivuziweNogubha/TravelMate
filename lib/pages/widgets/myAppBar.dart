@@ -13,7 +13,8 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
   final userProvider = Provider.of<UserProvider>(context);
   final user = userProvider.user;
 
-  return AppBar(                  
+  return AppBar(
+    elevation: 3.0,
     title: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -39,7 +40,6 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
     centerTitle: true,
     backgroundColor: AppColors.backgroundColor,
 
-    elevation: 0,
     actions: [
       // Icon(Icons.ac_unit_outlined),
       if (user != null && user.uid != null)
