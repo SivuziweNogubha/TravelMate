@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lifts_app/src/firebase_authentication.dart';
+import 'package:lifts_app/utils/important_constants.dart';
 
 import '../../main.dart';
+import '../widgets/loading_animation.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   @override
@@ -11,38 +14,94 @@ class ResetPasswordPage extends StatefulWidget {
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final FirebaseAuthService service = FirebaseAuthService();
 
 
   //NEED TO MOVE THIS LOGIC TO THE AUTHORISATION CLASS
+  // Future<void> _resetPassword() async {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) {
+  //       return CustomLoadingAnimation(animationPath: 'assets/animations/loading.json');
+  //     },
+  //   );
+  //
+  //   // Simulate a delay of 2 seconds
+  //   await Future.delayed(Duration(seconds: 2));
+  //     try {
+  //       await service.resetPassword(_emailController.text);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Password reset email sent')),
+  //       );
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to send password reset email: $e')),
+  //       );
+  //   }
+  // }
+
   Future<void> _resetPassword() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(
-          email: _emailController.text,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password reset email sent')),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send password reset email: $e')),
-        );
-      }
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+          builder: (BuildContext context) {
+            return CustomLoadingAnimation(animationPath: 'assets/animations/loading.json');
+          },
+    );
+
+    // Simulate a delay of 2 seconds
+    await Future.delayed(Duration(seconds: 2));
+
+    try {
+      await service.resetPassword(_emailController.text);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password reset email sent')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send password reset email: $e')),
+      );
     }
+
+    // Dismiss the loading dialog after the delay
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reset Password'),
+        backgroundColor: AppColors.backgroundColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Reset Password',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.none,
+                fontFamily: 'Aeonik',
+              ),
+            ),
+            const SizedBox(width: 8),
+            Image.asset(
+              color: Colors.white,
+              'assets/icons/reset_bar.png',
+              width: 44,
+              height: 74,
+            ),
+          ],
+        ),
         // backgroundColor: Colors.indigo,
         centerTitle: true,
         leading: IconButton(
           icon: ImageIcon(
             AssetImage('assets/back.png'), // Replace with your icon path
             size: 50,
-            color: Colors.black,
+            color: Colors.white,
           ),
           color: primary,
           onPressed: () {
@@ -68,6 +127,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 ),
                 SizedBox(height: 16.0),
                 TextFormField(
+                  // key: _formKey,
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(

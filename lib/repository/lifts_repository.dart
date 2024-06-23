@@ -27,7 +27,7 @@ class LiftsRepository {
 
     await liftDoc.update({
       'passengers': FieldValue.arrayRemove([userId]),
-      'liftStatus': 'cancelled',
+      'status': 'cancelled',
     });
 
     await liftDoc.update({
@@ -71,11 +71,6 @@ class LiftsRepository {
     }
   }
 
-  // Future<void> cancelLift(String liftId) async {
-  //   await _firestore.collection('lifts').doc(liftId).update({
-  //     'liftStatus': 'cancelled',
-  //   });
-  // }
 
 
 
@@ -102,23 +97,7 @@ class LiftsRepository {
   }
 
 
-  // Future<void> joinLift(String liftId, String userId) async {
-  //   DocumentReference liftDoc = _firestore.collection('lifts').doc(liftId);
-  //
-  //   await liftDoc.update({
-  //     'passengers': FieldValue.arrayUnion([userId])
-  //   });
-  //
-  //
-  //   await liftDoc.update({'availableSeats': FieldValue.increment(-1)});
-  //
-  //   DocumentReference userDoc = _firestore.collection('users').doc(userId);
-  //
-  //   await userDoc.update({
-  //     'confirmedLifts': FieldValue.arrayUnion([liftId])
-  //   });
-  // }
-  Future<void> joinLift(BuildContext context, String liftId, String userId,WalletRepository _walletRepository) async {
+  Future<void> joinLift(BuildContext context, String liftId, String userId, WalletRepository _walletRepository) async {
     try {
       // Check if the user has a wallet
       bool hasWallet = await _walletRepository.userHasWallet(userId);
@@ -131,26 +110,16 @@ class LiftsRepository {
       DocumentSnapshot liftSnapshot = await _firestore.collection('lifts').doc(liftId).get();
       Map<String, dynamic> liftData = liftSnapshot.data() as Map<String, dynamic>;
 
-      // Get available seats and passengers list
+      // Get available seats, passengers list, and lift status
       int availableSeats = liftData['availableSeats'];
       List<String> passengers = List<String>.from(liftData['passengers']);
+      String liftStatus = liftData['status'];
 
       // Fetch the cost of the lift (assuming it's stored in the lift data)
       double liftCost = liftData['price'];
 
-      // Fetch the user's wallet balance
-      // double userBalance = await _walletRepository.getWalletBalance(userId);
-
-      // // Check if the user has enough funds
-      // if (userBalance < liftCost) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Insufficient funds to join the lift')),
-      //   );
-      //   return;
-      // }
-
-      // Check if there are available seats
-      if (availableSeats > 0) {
+      // Check if there are available seats and lift is pending
+      if (availableSeats > 0 && liftStatus == 'pending') {
         // Deduct the cost from the user's wallet balance
         await _walletRepository.updateWalletBalance(userId, -liftCost);
 
@@ -166,9 +135,12 @@ class LiftsRepository {
 
         // Update the lift data
         passengers.add(userId);
+        String updatedStatus = 'confirmed';
+
         await _firestore.collection('lifts').doc(liftId).update({
           'availableSeats': availableSeats - 1,
           'passengers': passengers,
+          'status': updatedStatus,
         });
 
         // Notify the user of the successful booking
@@ -177,7 +149,7 @@ class LiftsRepository {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No available seats left')),
+          SnackBar(content: Text('No available seats left or lift is not pending')),
         );
       }
     } catch (e) {
@@ -186,6 +158,8 @@ class LiftsRepository {
       );
     }
   }
+
+
 
 
   Future<void> deleteUserData(String userId) async {

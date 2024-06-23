@@ -7,6 +7,8 @@ import 'package:lifts_app/pages/home.dart';
 
 import '../../main.dart';
 import '../../model/user_model.dart';
+import '../../utils/important_constants.dart';
+import '../widgets/loading_animation.dart';
 
 // Defining Colors
 Color primary = Color(0xff072227);
@@ -28,6 +30,7 @@ class _registration_screenState extends State<registration_screen> {
 
   // Firebase Auth
   final _auth = FirebaseAuth.instance;
+
 
   // Defining Editing Controller
   final TextEditingController firstNameEditingController =
@@ -232,13 +235,35 @@ class _registration_screenState extends State<registration_screen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Register',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.none,
+                fontFamily: 'Aeonik',
+              ),
+            ),
+            const SizedBox(width: 8),
+            Image.asset(
+              color: Colors.white,
+              'assets/icons/register.png',
+              width: 44,
+              height: 74,
+            ),
+          ],
+        ),
         leading: IconButton(
           icon: ImageIcon(
             AssetImage('assets/back.png'), // Replace with your icon path
             size: 50,
-            color: Colors.black,
+            color: Colors.white,
           ),
           color: primary,
           onPressed: () {
@@ -261,9 +286,9 @@ class _registration_screenState extends State<registration_screen> {
                       height: 150,
                       child: Image(
                         image: AssetImage("assets/logo.png"),
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.contain,
+                        width: 230,
+                        height: 230,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     firstNameField,
@@ -290,9 +315,18 @@ class _registration_screenState extends State<registration_screen> {
 
   void signUp(String email, String password) async {
     if (_formKey.currentState!.validate()) {
-      // setState(() {
-      //   _isLoading = true;
-      // });
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CustomLoadingAnimation(animationPath: 'assets/animations/loading.json');
+        },
+      );
+
+      // Simulate a delay for loading animation
+      await Future.delayed(Duration(seconds: 3));
+
+
       switch (_selectedType){
         case RegistrationType.user:
           await _registerAsUser(email, password);
@@ -304,6 +338,8 @@ class _registration_screenState extends State<registration_screen> {
     }
   }
 
+
+
   postDetailsToFirestore() async {
 
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -314,7 +350,7 @@ class _registration_screenState extends State<registration_screen> {
     userModel.email = user!.email;
     userModel.uid = user.uid;
     userModel.firstName = firstNameEditingController.text;
-    userModel.lastName = lastNameEditingController.text;
+    // userModel.lastName = lastNameEditingController.text;
 
     await firebaseFirestore
         .collection("users")

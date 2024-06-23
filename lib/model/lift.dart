@@ -4,6 +4,7 @@ class Lift {
   final String liftId;
   final String offeredBy;
   final String departureLocation;
+  final String status;
   final double departureLat;
   final double departureLng;
   final String destinationLocation;
@@ -18,6 +19,7 @@ class Lift {
   Lift({
     required this.liftId,
     required this.offeredBy,
+    required this.status,
     required this.departureLocation,
     required this.departureLat,
     required this.departureLng,
@@ -35,6 +37,7 @@ class Lift {
       : this(
     liftId: jsonMap['liftId'] as String,
     offeredBy: jsonMap['offeredBy'] as String,
+    status: jsonMap['status'] as String,
     departureLocation: jsonMap['departureLocation'] as String,
     departureLat: jsonMap['departureLat'] as double,
     departureLng: jsonMap['departureLng'] as double,
@@ -52,6 +55,7 @@ class Lift {
     return {
       'liftId': liftId,
       'offeredBy': offeredBy,
+      'status': status,
       'departureLocation': departureLocation,
       'departureLat': departureLat,
       'departureLng': departureLng,

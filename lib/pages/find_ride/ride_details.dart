@@ -303,9 +303,10 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
       destinationLocation: widget.destination,
       destinationLat: widget.destinationLocation.latitude,
       destinationLng: widget.destinationLocation.longitude,
-      departureDateTime: DateTime.now(), // Adjust accordingly
-      availableSeats: widget.seat, // Adjust accordingly
-      destinationImage: widget.image, // Adjust accordingly
+      departureDateTime: DateTime.now(),
+      availableSeats: widget.seat,
+      destinationImage: widget.image,
+      status: 'confirmed',
       price: widget.price,
     );
 

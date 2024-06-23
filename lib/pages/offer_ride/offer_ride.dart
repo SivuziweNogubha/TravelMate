@@ -417,6 +417,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
         departureDateTime: _dateTime ?? DateTime.now(),
         availableSeats: _availableSeats,
         destinationImage: destinationImageUrl,
+        status: 'pending',
         price: double.tryParse(_priceController.text) ?? 0.0,
       );
 
@@ -584,11 +585,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
         controller.text = prediction.description!;
       },
       itemBuilder: (context, index, Prediction prediction) => _buildPredictionItem(context, prediction, controller),
-      // overlayBgColor: Colors.black.withOpacity(0.8),
-      // containerDecoration: BoxDecoration(
-      //   color: Colors.black.withOpacity(0.8),
-      //   borderRadius: BorderRadius.circular(10),
-      // ),
     );
   }
 
@@ -712,62 +708,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
       ),
     );
   }
-  // Widget _buildSeatsDropdown() {
-  //   return Row(
-  //     children: [
-  //       Image.asset(
-  //         'assets/icons/seats.png',
-  //         width: 44,
-  //         height: 44,
-  //       ),
-  //       SizedBox(width: 16.0),
-  //       DropdownButton<int>(
-  //         value: _availableSeats,
-  //         onChanged: (value) {
-  //           if (value != null) {
-  //             setState(() {
-  //               _availableSeats = value;
-  //             });
-  //           }
-  //         },
-  //         items: List.generate(
-  //           3,
-  //               (index) => DropdownMenuItem(
-  //             value: index + 1,
-  //             child: Text('${index + 1}'),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-  //
-  // Widget _buildPriceField() {
-  //   return TextFormField(
-  //     controller: _priceController,
-  //     decoration: InputDecoration(
-  //       labelText: '0.0',
-  //       prefixIcon: ImageIcon(
-  //         AssetImage('assets/icons/rands.png'),
-  //       ),
-  //       border: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //       ),
-  //     ),
-  //     keyboardType: TextInputType.number,
-  //     validator: (value) {
-  //       if (value!.isEmpty) {
-  //         return 'Please enter a price';
-  //       }
-  //       if (double.tryParse(value) == null) {
-  //         return 'Please enter a valid number';
-  //       }
-  //       return null;
-  //     },
-  //   );
-  // }
-
-
 
   Widget _buildSeatsAndPriceRow() {
     return Row(

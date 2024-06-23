@@ -108,11 +108,12 @@ class FirebaseAuthService {
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {
-      await googleSignIn.signOut(); // Signing out any existing user before signing in
-
+      await googleSignIn.signOut();
+      print('here number 1>>>>>>>>>>>>>>>>>>>>');
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser != null) {
+        print('here number 2>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
         final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
         final AuthCredential credential = GoogleAuthProvider.credential(
@@ -124,13 +125,15 @@ class FirebaseAuthService {
 
         String uid = userCredential.user!.uid;
         DocumentSnapshot doc = await _firestore.collection("users").doc(uid).get();
-
+        print("im here>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         if (!doc.exists) {
+          print("im inside>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+          // Register the user in Firestore if they don't exist
           await _firestore.collection("users").doc(uid).set({
             "uid": uid,
             "name": googleUser.displayName,
             "email": googleUser.email,
-            "profilePhoto": googleUser.photoUrl ?? AppValues.defaultUserImg,
+            "photoURL": googleUser.photoUrl ?? AppValues.defaultUserImg,
             "cash": 0.0,
           });
         }
@@ -138,9 +141,11 @@ class FirebaseAuthService {
 
       return _auth.currentUser;
     } catch (e) {
+      print('Error signing in with Google: $e');
       throw Exception('An error occurred while signing in with Google.');
     }
   }
+
 
   Future<void> signOut() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();

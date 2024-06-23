@@ -11,6 +11,8 @@ import 'package:lifts_app/pages/onboarding/registration_screen.dart';
 import 'package:lifts_app/pages/onboarding/reset_password.dart';
 import 'package:lifts_app/src/firebase_authentication.dart';
 import 'package:lifts_app/utils/important_constants.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 
 import '../../model/user_model.dart';
 
@@ -32,6 +34,7 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
   final TextEditingController passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuthService service = FirebaseAuthService();
 
   bool _isLoading = false;
   late AnimationController _loadingController;
@@ -122,30 +125,6 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
     );
 
     final passwordFields = TextFormField(
-      // autofocus: false,
-      // controller: passwordController,
-      // obscureText: true,
-      // validator: (value) {
-      //   RegExp regex = RegExp(r'^.{6,}$');
-      //   if (value!.isEmpty) {
-      //     return ("Password is required for Login");
-      //   }
-      //   if (!regex.hasMatch(value)) {
-      //     return ("Password is Invalid!!!");
-      //   }
-      // },
-      // onSaved: (value) {
-      //   passwordController.text = value!;
-      // },
-      // textInputAction: TextInputAction.done,
-      // decoration: InputDecoration(
-      //   prefixIcon: Icon(Icons.key),
-      //   contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-      //   hintText: "Password",
-      //   border: OutlineInputBorder(
-      //     borderRadius: BorderRadius.circular(10),
-      //   ),
-      // ),
       autofocus: false,
       controller: passwordController,
       obscureText: _obscureText,
@@ -221,9 +200,9 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
                       height: 200,
                       child: Image.asset(
                         "assets/logo.png",
-                        width: 300,
-                        height: 300,
-                        fit: BoxFit.contain,
+                        width: 400,
+                        height: 500,
+                        fit: BoxFit.fitHeight,
                       ),
                     ),
                     SizedBox(height: 35),
@@ -300,66 +279,68 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          padding: const EdgeInsets.all(10.0),
-                          child: InkWell(
-                            onTap: () async {
-                              User? user = await signInWithGoogle();
-                              if (user != null) {
-                                // Handle successful sign-in
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Sign in successful: ${user.displayName}')),
-                                );
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => HomePage())
-                                );
-                              } else {
-                                // Handle sign-in failure
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Sign in failed')),
-                                );
-                              }
-                            },
-                            child: const FaIcon(
-                              FontAwesomeIcons.google,
-                              color: Color.fromARGB(255, 12, 12, 12),
-                              size: 18,
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.grey[200],
+                        //     borderRadius: BorderRadius.circular(10.0),
+                        //   ),
+                        //   padding: const EdgeInsets.all(10.0),
+                        //   child: InkWell(
+                        //     onTap: () async {
+                        //       User? user = await service.signInWithGoogle();
+                        //       if (user != null) {
+                        //         // Handle successful sign-in
+                        //         ScaffoldMessenger.of(context).showSnackBar(
+                        //           SnackBar(content: Text('Sign in successful: ${user.displayName}')),
+                        //         );
+                        //         Navigator.push(
+                        //             context,
+                        //             MaterialPageRoute(builder: (context) => HomePage())
+                        //         );
+                        //       } else {
+                        //         // Handle sign-in failure
+                        //         ScaffoldMessenger.of(context).showSnackBar(
+                        //           SnackBar(content: Text('Sign in failed')),
+                        //         );
+                        //       }
+                        //     },
+                        //     child: const FaIcon(
+                        //       FontAwesomeIcons.google,
+                        //       color: Color.fromARGB(255, 12, 12, 12),
+                        //       size: 18,
+                        //     ),
+                        //   ),
+                        // ),
+                        const SizedBox(width: 20),
 
+                        _socialsSignInButtons(_signInWithGoogle),
 
                         const SizedBox(width: 10),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          padding: const EdgeInsets.all(10.0),
-                          child: const FaIcon(
-                            FontAwesomeIcons.facebook,
-                            color: Color.fromARGB(255, 12, 12, 12),
-                            size: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          padding: const EdgeInsets.all(10.0),
-                          child: const FaIcon(
-                            FontAwesomeIcons.apple,
-                            color: Color.fromARGB(255, 12, 12, 12),
-                            size: 18,
-                          ),
-                        ),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.grey[200],
+                        //     borderRadius: BorderRadius.circular(10.0),
+                        //   ),
+                        //   padding: const EdgeInsets.all(10.0),
+                        //   child: const FaIcon(
+                        //     FontAwesomeIcons.facebook,
+                        //     color: Color.fromARGB(255, 12, 12, 12),
+                        //     size: 18,
+                        //   ),
+                        // ),
+                        // const SizedBox(width: 10),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.grey[200],
+                        //     borderRadius: BorderRadius.circular(10.0),
+                        //   ),
+                        //   padding: const EdgeInsets.all(10.0),
+                        //   child: const FaIcon(
+                        //     FontAwesomeIcons.apple,
+                        //     color: Color.fromARGB(255, 12, 12, 12),
+                        //     size: 18,
+                        //   ),
+                        // ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -370,6 +351,84 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
           ),
         ),
       ),
+    );
+  }
+
+  void _signInWithGoogle() async {
+
+    try {
+      User? user = await service.signInWithGoogle();
+
+      if (user == null) {
+        Fluttertoast.showToast(
+          msg: 'Failed to sign in.',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      } else {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => HomePage())
+        );
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: e.toString(),
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+
+  }
+  Widget _socialsSignInButtons(signInWithGoogle) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Google Button
+        GestureDetector(
+          onTap: () {
+            signInWithGoogle();
+          },
+          child: Container(
+            height: 60,
+            width: 60,
+            padding: const EdgeInsets.all(15),
+            decoration: const BoxDecoration(
+              color: AppColors.buttonColor,
+              borderRadius: BorderRadius.all(
+                Radius.circular(15),
+              ),
+            ),
+            child: SvgPicture.asset(
+              'assets/icons/google.svg',
+              height: 5,
+              width: 5,
+            ),
+          ),
+        ),
+        const SizedBox(width: 20),
+        // Apple Button
+        // Container(
+        //   height: 60,
+        //   width: 60,
+        //   padding: const EdgeInsets.all(15),
+        //   decoration: const BoxDecoration(
+        //     color: AppColors.buttonColor,
+        //     borderRadius: BorderRadius.all(
+        //       Radius.circular(20),
+        //     ),
+        //   ),
+        //   child: SvgPicture.asset(
+        //     'assets/icons/apple_logo.svg',
+        //     height: 5,
+        //     width: 5,
+        //   ),
+        // ),
+      ],
     );
   }
 

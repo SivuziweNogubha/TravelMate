@@ -114,8 +114,12 @@ flutter:
     - assets/icons/TravelMate.png
     - assets/icons/rands.png
     - assets/icons/wallet.png
+    - assets/icons/google.svg
     - assets/icons/settings.png
+    - assets/icons/reset_bar.png
+    - assets/icons/reset_icon.png
     - assets/icons/mail.png
+    - assets/icons/register.png
     - assets/icons/search.png
     - assets/icons/logout.svg
     - assets/delete_icon.svg

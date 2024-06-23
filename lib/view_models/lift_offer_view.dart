@@ -42,6 +42,7 @@ class LiftOfferViewModel extends ChangeNotifier {
       destinationLng: destinationCoordinates.longitude,
       destinationImage: destinationImageUrl, // Include the destinationImage
       passengers: [],
+      status: 'pending',
       price: price,
     );
 
@@ -81,6 +82,7 @@ class LiftOfferViewModel extends ChangeNotifier {
       destinationLng: destinationCoordinates.longitude,
       destinationImage: destinationImageUrl, // Include the destinationImage
       passengers: [],
+      status: 'pending',
       price: price,
     );
     try {
