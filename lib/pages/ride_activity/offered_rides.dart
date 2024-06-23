@@ -195,6 +195,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lifts_app/utils/important_constants.dart';
 import 'package:lifts_app/view_models/ride_view_model.dart';
 import 'EditLift.dart';
 import '../widgets/loading_animation.dart';
@@ -227,6 +228,7 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
+
       stream: liftsViewModel.getLiftsStreamByUserId(_auth.currentUser!.uid),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -255,6 +257,7 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
           }
 
           return ListView(
+                clipBehavior: Clip.hardEdge,
             children: validLifts.map((DocumentSnapshot document) {
               Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
               Timestamp departureTimestamp = data['departureDateTime'];
@@ -262,15 +265,19 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
               String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(departureDateTime);
 
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
+
+                color: AppColors.backgroundColor,
+                // margin: const EdgeInsets.symmetric(vertical: 8.0),
                 shape: RoundedRectangleBorder(
                   side: BorderSide(
-                    color: Colors.indigo,
-                    width: 2.0, // Set the border width
+
+                    color: Colors.red,
+                    width: 3.0, // Set the border width
                   ),
                   borderRadius: BorderRadius.circular(8.0), // Set the border radius if needed
                 ),
                 child: ListTile(
+                  textColor: Colors.white,
                   leading: Container(
                     width: 50,
                     height: 50,
@@ -291,6 +298,7 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                     children: [
                       IconButton(
                         icon: ImageIcon(
+                          color: Colors.white,
                           AssetImage('assets/icons/edit.png'),
                           size: 20, // Adjust size as needed
                         ),
@@ -308,6 +316,7 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
                       ),
                       IconButton(
                         icon: ImageIcon(
+                          color: Colors.white,
                           AssetImage('assets/icons/delete.png'),
                           size: 30, // Adjust size as needed
                         ),

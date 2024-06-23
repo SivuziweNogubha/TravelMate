@@ -975,28 +975,19 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
       child: Scaffold(
         body: Stack(
           children: [
-            _currentPosition != null
-                ? GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(
-                  _currentPosition!.latitude,
-                  _currentPosition!.longitude,
-                ),
-                zoom: 15,
-              ),
-              onMapCreated: (GoogleMapController controller) {
-                _googleMapController = controller;
-              },
-            )
-                : const Center(
-              child: CircularProgressIndicator(),
-            ),
             Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                child: Container(
-                  color: Colors.black.withOpacity(0.3),
+              child: ImageFiltered(
+                imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Image.asset(
+                  'assets/pictures/dark_map.jpg',
+                  fit: BoxFit.cover,
                 ),
+              ),
+            ),
+            // Optional overlay to adjust brightness/contrast
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
               ),
             ),
             StreamBuilder<DocumentSnapshot>(
@@ -1009,6 +1000,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                 var userData = snapshot.data!.data() as Map<String, dynamic>;
 
                 return Card(
+                  color: AppColors.backgroundColor,
                   margin: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
                   child: Center(
                     child: Stack(
@@ -1076,7 +1068,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                                 Text(
                                   '${userData['firstName']} ${userData['lastName']}',
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     decoration: TextDecoration.none,
@@ -1090,17 +1082,19 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                               title: Row(
                                 children: [
                                   ImageIcon(
+                                    color: Colors.white,
                                     AssetImage('assets/icons/mail.png'),
                                     size: 24.0,
                                   ),
                                   SizedBox(width: 8.0),
                                   Text(
                                     'E-mail:',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    style: TextStyle(color:Colors.white,fontSize: 18, fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                               subtitle: Text(userData['email'] ?? 'N/A'),
+                              subtitleTextStyle: TextStyle(color: Colors.white),
                             ),
                           GestureDetector(
                             onTap: () async {
@@ -1208,7 +1202,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(
-                                    "assets/icons/delete.svg",
+                                    "assets/delete_icon.svg",
                                     color: Colors.white,
                                     height: 20,
                                   ),
@@ -1241,7 +1235,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                             child: ImageIcon(
                               AssetImage('assets/icons/settings.png'),
                               size: 24.0,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                         ),

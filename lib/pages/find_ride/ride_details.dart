@@ -6,6 +6,7 @@ import 'package:google_maps_webservice/directions.dart' as DirectionsService;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/directions.dart' as directions;
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:lifts_app/utils/important_constants.dart';
 import '../../main.dart';
 import '../../model/lift.dart';
 import '../../repository/lifts_repository.dart';
@@ -382,7 +383,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                     builder: (context, scrollController) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.backgroundColor,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(16.0),
                             topRight: Radius.circular(16.0),
@@ -422,7 +423,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                         Text(
                                           widget.offeredByName,
                                           style: const TextStyle(
-                                            color: Colors.black,
+                                            color: Colors.white,
                                             fontSize: 22,
                                             fontWeight: FontWeight.bold,
                                             decoration: TextDecoration.none,
@@ -457,7 +458,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                 const Text(
                                   "Trip Route",
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     decoration: TextDecoration.none,
@@ -474,7 +475,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                       child: Text(
                                         widget.departure,
                                         style: const TextStyle(
-                                          color: Colors.black,
+                                          color: Colors.white,
                                           fontSize: 12,
                                           fontWeight: FontWeight.normal,
                                           decoration: TextDecoration.none,
@@ -493,7 +494,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                       child: Text(
                                         widget.destination,
                                         style: const TextStyle(
-                                          color: Colors.black,
+                                          color: Colors.white,
                                           fontSize: 12,
                                           fontWeight: FontWeight.normal,
                                           decoration: TextDecoration.none,
@@ -507,7 +508,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                 Text(
                                   "Price: \R${widget.price.toStringAsFixed(2)}",
                                   style: const TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     decoration: TextDecoration.none,
@@ -518,7 +519,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                 Text(
                                   "Available Seats: $widget.seat",
                                   style: const TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     decoration: TextDecoration.none,

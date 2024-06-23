@@ -6,6 +6,7 @@ import 'package:lifts_app/pages/profile.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/user_provider.dart';
+import '../../utils/important_constants.dart';
 
 
 PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
@@ -19,7 +20,7 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
         const Text(
           'TravelMate',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.w500,
             decoration: TextDecoration.none,
@@ -28,6 +29,7 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
         ),
         const SizedBox(width: 8),
         Image.asset(
+          color: Colors.white,
           'assets/icons/TravelMate.png',
           width: 44,
           height: 74,
@@ -35,7 +37,8 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
       ],
     ),
     centerTitle: true,
-    backgroundColor: const Color(0x44000000),
+    backgroundColor: AppColors.backgroundColor,
+
     elevation: 0,
     actions: [
       // Icon(Icons.ac_unit_outlined),

@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifts_app/pages/onboarding/login_screen.dart';
 import 'package:lifts_app/pages/widgets/myAppBar.dart';
 import '../model/user_model.dart';
+import '../utils/important_constants.dart';
 import 'offer_ride/offer_ride.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -56,65 +57,63 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(10),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: BottomNavigationBar(
-            // type: BottomNavigationBarType.fixed,
-            items: [
-              BottomNavigationBarItem(
-                icon: ImageIcon(
-                  AssetImage('assets/car_passengers.png'),
-                  size: 28,
+      bottomNavigationBar: BottomNavigationBar(
+
+              backgroundColor: AppColors.backgroundColor,
+              type: BottomNavigationBarType.fixed,
+              items: [
+                BottomNavigationBarItem(
+                  icon: ImageIcon(
+                    AssetImage('assets/icons/car_passengers.png'),
+                    size: 28,
+                  ),
+                  label: 'Offer Ride',
                 ),
-                label: 'Offer Ride',
-              ),
-              BottomNavigationBarItem(
-                icon: ImageIcon(
-                  AssetImage('assets/passenger.png'),
-                  size: 28,
+                BottomNavigationBarItem(
+                  icon: ImageIcon(
+                    AssetImage('assets/passenger.png'),
+                    size: 28,
+                  ),
+                  label: 'Find Ride',
                 ),
-                label: 'Find Ride',
-              ),
-              BottomNavigationBarItem(
-                icon: ImageIcon(
-                  AssetImage('assets/activity.png'),
-                  size: 28,
+                BottomNavigationBarItem(
+                  icon: ImageIcon(
+                    AssetImage('assets/activity.png'),
+                    size: 28,
+                    // color: Colors.white,
+                  ),
+                  label: 'My Rides',
                 ),
-                label: 'My Rides',
-              ),
-              BottomNavigationBarItem(
-                icon: widget.userModel?.photoURL != null
-                    ? CircleAvatar(
-                  backgroundImage: NetworkImage(widget.userModel!.photoURL!),
-                  radius: 14,
-                )
-                    : ImageIcon(
-                  AssetImage('assets/profile.png'),
-                  size: 28,
+                BottomNavigationBarItem(
+                  icon: widget.userModel?.photoURL != null
+                      ? CircleAvatar(
+                    backgroundImage: NetworkImage(widget.userModel!.photoURL!),
+                    radius: 14,
+                  )
+                      : ImageIcon(
+                    AssetImage('assets/profile.png'),
+                    size: 28,
+                  ),
+                  label: 'Profile',
                 ),
-                label: 'Profile',
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.grey[700],
+              showUnselectedLabels: true,
+              iconSize: 28,
+              unselectedLabelStyle: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
               ),
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: Colors.blue[800],
-            unselectedItemColor: Colors.grey[600],
-            showUnselectedLabels: true,
-            iconSize: 28,
-            unselectedLabelStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+              selectedLabelStyle: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              enableFeedback: true,
+              onTap: _onItemTapped,
             ),
-            selectedLabelStyle: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-            enableFeedback: true,
-            onTap: _onItemTapped,
-          ),
-        ),
-      ),
+
     );
   }
 }

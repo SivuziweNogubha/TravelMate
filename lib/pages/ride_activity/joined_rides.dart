@@ -287,6 +287,7 @@ import 'package:provider/provider.dart';
 
 // import '../../model/lifts_view_model.dart';
 // import '../view_models/lifts_view_model.dart';
+import '../../utils/important_constants.dart';
 import '../widgets/loading_animation.dart';
 
 class JoinedRidesView extends StatefulWidget {
@@ -327,6 +328,8 @@ class _JoinedRidesViewState extends State<JoinedRidesView> {
               String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(departureDateTime);
 
               return Card(
+                color: AppColors.backgroundColor,
+
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 shape: RoundedRectangleBorder(
                   side: BorderSide(
@@ -336,6 +339,8 @@ class _JoinedRidesViewState extends State<JoinedRidesView> {
                   borderRadius: BorderRadius.circular(8.0), // Set the border radius if needed
                 ),
                 child: ListTile(
+                  textColor: Colors.white,
+
                   leading: Container(
                     width: 50,
                     height: 50,
@@ -354,6 +359,7 @@ class _JoinedRidesViewState extends State<JoinedRidesView> {
                     children: [
                       IconButton(
                         icon: ImageIcon(
+                          color: Colors.white,
                           AssetImage('assets/icons/delete.png'),
                           size: 30, // Adjust size as needed
                         ),
