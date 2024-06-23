@@ -267,7 +267,7 @@ class _FindRideTabState extends State<FindRideTab> {
                                             departureLocation: LatLng(ride['departureLat'], ride['departureLng']),
                                             destinationLocation: LatLng(ride['destinationLat'], ride['destinationLng']),
                                             offeredBy: ride['offeredBy'],
-                                            offeredByName: userData['firstName'],
+                                            offeredByName: userData['name'],
                                             offeredByPhotoUrl: userData['photoURL'],
                                             destination: ride['destinationLocation'],
                                             departure: ride['departureLocation'],

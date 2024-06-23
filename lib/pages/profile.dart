@@ -1066,7 +1066,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '${userData['firstName']} ${userData['lastName']}',
+                                  '${userData['name']}',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,

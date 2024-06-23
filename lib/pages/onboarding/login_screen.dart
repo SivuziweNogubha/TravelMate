@@ -279,68 +279,9 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Container(
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.grey[200],
-                        //     borderRadius: BorderRadius.circular(10.0),
-                        //   ),
-                        //   padding: const EdgeInsets.all(10.0),
-                        //   child: InkWell(
-                        //     onTap: () async {
-                        //       User? user = await service.signInWithGoogle();
-                        //       if (user != null) {
-                        //         // Handle successful sign-in
-                        //         ScaffoldMessenger.of(context).showSnackBar(
-                        //           SnackBar(content: Text('Sign in successful: ${user.displayName}')),
-                        //         );
-                        //         Navigator.push(
-                        //             context,
-                        //             MaterialPageRoute(builder: (context) => HomePage())
-                        //         );
-                        //       } else {
-                        //         // Handle sign-in failure
-                        //         ScaffoldMessenger.of(context).showSnackBar(
-                        //           SnackBar(content: Text('Sign in failed')),
-                        //         );
-                        //       }
-                        //     },
-                        //     child: const FaIcon(
-                        //       FontAwesomeIcons.google,
-                        //       color: Color.fromARGB(255, 12, 12, 12),
-                        //       size: 18,
-                        //     ),
-                        //   ),
-                        // ),
-                        const SizedBox(width: 20),
-
+                        const SizedBox(width: 28),
                         _socialsSignInButtons(_signInWithGoogle),
-
                         const SizedBox(width: 10),
-                        // Container(
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.grey[200],
-                        //     borderRadius: BorderRadius.circular(10.0),
-                        //   ),
-                        //   padding: const EdgeInsets.all(10.0),
-                        //   child: const FaIcon(
-                        //     FontAwesomeIcons.facebook,
-                        //     color: Color.fromARGB(255, 12, 12, 12),
-                        //     size: 18,
-                        //   ),
-                        // ),
-                        // const SizedBox(width: 10),
-                        // Container(
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.grey[200],
-                        //     borderRadius: BorderRadius.circular(10.0),
-                        //   ),
-                        //   padding: const EdgeInsets.all(10.0),
-                        //   child: const FaIcon(
-                        //     FontAwesomeIcons.apple,
-                        //     color: Color.fromARGB(255, 12, 12, 12),
-                        //     size: 18,
-                        //   ),
-                        // ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -370,7 +311,7 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
       } else {
         Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => HomePage())
+            MaterialPageRoute(builder: (_) => MyHomePage(title: 'Home' ))
         );
       }
     } catch (e) {
