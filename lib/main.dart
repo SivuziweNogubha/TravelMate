@@ -68,9 +68,7 @@ Future<void> main() async {
           ChangeNotifierProvider(create: (_) => ProfileViewModel(userId)),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => LiftsViewModel()),
-        // Add the ProfileViewModel provider
 
-        // Add other providers here if needed
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

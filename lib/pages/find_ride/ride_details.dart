@@ -11,6 +11,7 @@ import '../../main.dart';
 import '../../model/lift.dart';
 import '../../repository/lifts_repository.dart';
 import '../../repository/wallet_repo.dart';
+import '../widgets/loading_animation.dart';
 import 'Map.dart';
 
 class ConfirmRidePage extends StatefulWidget {
@@ -265,7 +266,17 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
           onPressed: () async {
             String mylift = liftId;
             String userId = FirebaseAuth.instance.currentUser!.uid;
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return CustomLoadingAnimation(animationPath: 'assets/animations/loading.json');
+              },
+            );
+            await Future.delayed(Duration(seconds: 4));
             await _liftsRepository.joinLift(context, mylift, userId,_walletRepository);
+            Navigator.of(context, rootNavigator: true).pop();
+
           },
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           minWidth: MediaQuery.of(context).size.width,
@@ -518,7 +529,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  "Available Seats: $widget.seat",
+                                  "Available Seats: ${widget.seat}",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,

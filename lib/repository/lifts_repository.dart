@@ -24,6 +24,7 @@ class LiftsRepository {
 
   Future<void> cancelLift(String liftId, String userId) async {
     DocumentReference liftDoc = _firestore.collection('lifts').doc(liftId);
+    DocumentReference BookingDoc = _firestore.collection('bookings').doc(liftId);
 
     await liftDoc.update({
       'passengers': FieldValue.arrayRemove([userId]),
@@ -67,7 +68,6 @@ class LiftsRepository {
       logger.i('Lift updated with ID: ${lift.liftId}');
     } catch (error) {
       logger.e('Error updating lift: $error');
-      // Handle errors appropriately
     }
   }
 
@@ -83,6 +83,7 @@ class LiftsRepository {
       // Handle errors appropriately
     }
   }
+
 
   Future<List<DocumentSnapshot>> searchRides(
       String destination, DateTime selectedDate, String currentUserId) async {
@@ -119,7 +120,7 @@ class LiftsRepository {
       double liftCost = liftData['price'];
 
       // Check if there are available seats and lift is pending
-      if (availableSeats > 0 && liftStatus == 'pending') {
+      if (availableSeats > 0 && liftStatus == 'pending'||liftStatus == 'cancelled') {
         // Deduct the cost from the user's wallet balance
         await _walletRepository.updateWalletBalance(userId, -liftCost);
 
@@ -220,6 +221,8 @@ class LiftsRepository {
     }
   }
 
+
+  //NOT USED, NEEDS TO BE USED
   Future<List<Booking>> getBookingsByUserId(String userId) async {
     final QuerySnapshot snapshot = await _firestore
         .collection('bookings')
@@ -232,13 +235,13 @@ class LiftsRepository {
     }).toList();
   }
 
-//USE THIS CONFIRM METHOD INSTEAD OF DOING IT MANUALLY
+  //NOT USED, NEEDS TO BE USED
   Future<void> confirmBooking(String bookingId) async {
     await _firestore.collection('bookings').doc(bookingId).update({
       'confirmed': true,
     });
   }
-
+  //NOT USED, NEEDS TO BE USED
   Future<void> cancelBooking(String bookingId) async {
     // try {
       await _firestore.collection('bookings').doc(bookingId).update({

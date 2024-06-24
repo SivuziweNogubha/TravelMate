@@ -370,12 +370,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
   TextEditingController _dateController = TextEditingController();
   // Bool destination = true as Bool;
 
-
-  static const _initialCameraPosition = CameraPosition(
-    target: LatLng(-26.232590, 28.240967),
-    zoom: 14.4746,
-  );
-
   @override
   void initState() {
     super.initState();
@@ -406,8 +400,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
         },
       );
 
-      // Simulate a delay for loading animation
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(Duration(seconds: 5));
 
       final user = FirebaseAuth.instance.currentUser;
       final liftRef = FirebaseFirestore.instance.collection('lifts').doc();
@@ -449,17 +442,22 @@ class _OfferRideTabState extends State<OfferRideTab> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Ride offered successfully')),
           );
+          Navigator.of(context, rootNavigator: true).pop();
+
           _resetForm();
 
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to offer ride: $e')),
           );
+          Navigator.of(context, rootNavigator: true).pop();
+
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Please fill in all fields')),
         );
+        Navigator.of(context, rootNavigator: true).pop();
       }
     }
   }
@@ -601,7 +599,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           decoration: TextDecoration.none,
-                          fontFamily: 'Aeonik',
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -614,7 +611,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           decoration: TextDecoration.none,
-                          fontFamily: 'Aeonik',
                         ),
                       ),
                     ],

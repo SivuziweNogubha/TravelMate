@@ -120,7 +120,7 @@ GoogleMap googleMap(
 
     double zoomLevel = 10.4;
     if (constraints.maxHeight > 500) {
-      zoomLevel = 14.0;
+      zoomLevel = 8.0;
     } else if (constraints.maxHeight > 300) {
       zoomLevel = 5.0;
     }
