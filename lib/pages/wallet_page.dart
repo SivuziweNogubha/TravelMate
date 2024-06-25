@@ -26,6 +26,12 @@ class _WalletPageState extends State<WalletPage> {
 
   Future<void> _fetchBalance() async {
     String userId = FirebaseAuth.instance.currentUser!.uid;
+    bool walletsCollectionExists = await _walletRepository.userHasWallet(userId);
+
+    if (!walletsCollectionExists) {
+      await _walletRepository.createWallet(userId);
+    }
+
     double balance = await _walletRepository.getWalletBalance(userId);
     setState(() {
       _balance = balance;
@@ -39,6 +45,7 @@ class _WalletPageState extends State<WalletPage> {
     }
 
     setState(() {
+      _balance += amount;
       _isLoading = true;
     });
 
