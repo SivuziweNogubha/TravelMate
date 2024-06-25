@@ -50,7 +50,7 @@ GOOGLE_CLOUD_MAP_ID=your_google_cloud_map_id
 Replace the placeholder values with your actual API keys and Firebase configuration.
 
 ## Running TravelMate
-1. Clone the repository: `git clone https://github.com/SivuziweNogubha/TravelMate.git`
+1. Clone the repository: `git@github.com:SivuziweNogubha/Travel.git`
 2. Navigate to the project directory: `cd TravelMate`
 3. Install dependencies: `flutter pub get`
 4. Run the app: `flutter run`
