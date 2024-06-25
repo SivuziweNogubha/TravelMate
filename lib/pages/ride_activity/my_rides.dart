@@ -1,13 +1,7 @@
 import 'dart:ui';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lifts_app/pages/ride_activity/EditLift.dart';
-import 'package:intl/intl.dart';
-import 'package:lifts_app/pages/widgets/loading_animation.dart';
+
 
 import '../../utils/important_constants.dart';
 import 'joined_rides.dart';
@@ -19,33 +13,12 @@ class MyRidesTab extends StatefulWidget {
 }
 
 class _MyRidesTabState extends State<MyRidesTab> {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  late GoogleMapController _googleMapController;
-  Position? _currentPosition;
 
-  static const _initialCameraPosition = CameraPosition(
-    target:  LatLng(-26.232590, 28.240967),
-    zoom: 14.4746,
-  );
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
   }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      setState(() {
-        _currentPosition = position;
-      });
-    } catch (e) {
-      print('Error getting current location: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

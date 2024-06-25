@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lifts_app/pages/home.dart';
+import 'package:lifts_app/src/firebase_authentication.dart';
 
 import '../../main.dart';
 import '../../model/user_model.dart';
@@ -24,15 +25,13 @@ class registration_screen extends StatefulWidget {
 }
 
 class _registration_screenState extends State<registration_screen> {
-  // Defining a Form Key
+
   final _formKey = GlobalKey<FormState>();
   RegistrationType _selectedType = RegistrationType.user;
 
-  // Firebase Auth
-  final _auth = FirebaseAuth.instance;
+  //I'M INITIALIZING MY FIREBASE AUTH SERVICE, TO GAIN ACCESS TO ALL MY AUTHENTICATION RELATED CODE.
+  FirebaseAuthService service = FirebaseAuthService();
 
-
-  // Defining Editing Controller
   final TextEditingController firstNameEditingController =
   new TextEditingController();
   final TextEditingController lastNameEditingController =
@@ -219,7 +218,7 @@ class _registration_screenState extends State<registration_screen> {
       color: primary,
       child: MaterialButton(
         onPressed: () {
-          signUp(emailEditingController.text, passwordEditingController.text);
+          signUp(emailEditingController.text, passwordEditingController.text,context);
         },
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
@@ -313,7 +312,7 @@ class _registration_screenState extends State<registration_screen> {
     );
   }
 
-  void signUp(String email, String password) async {
+  void signUp(String email, String password,BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       showDialog(
         context: context,
@@ -329,50 +328,14 @@ class _registration_screenState extends State<registration_screen> {
 
       switch (_selectedType){
         case RegistrationType.user:
-          await _registerAsUser(email, password);
+          await service.registerAsUser(email, password, firstNameEditingController.text,context);
           break;
         case RegistrationType.driver:
-          await _registerAsUser(email, password);
+          await service.registerAsUser(email, password, firstNameEditingController.text,context);
           break;
       }
     }
   }
 
-
-
-  postDetailsToFirestore() async {
-
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    User? user = _auth.currentUser;
-
-    UserModel userModel = UserModel();
-
-    userModel.email = user!.email;
-    userModel.uid = user.uid;
-    userModel.firstName = firstNameEditingController.text;
-    // userModel.lastName = lastNameEditingController.text;
-
-    await firebaseFirestore
-        .collection("users")
-        .doc(user.uid)
-        .set(userModel.toMap());
-    Fluttertoast.showToast(msg: "Account Created Successfully :)");
-
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Home')), (route) => false);
-  }
-
-  Future<void> _registerAsUser(String email, String password) async {
-    // Add user registration logic here
-    await _auth
-        .createUserWithEmailAndPassword(email: email, password: password)
-        .then((value) => {postDetailsToFirestore()})
-        .catchError((e) {
-      Fluttertoast.showToast(msg: e!.message);
-    });
-  }
-  Future<void> _registerAsDriver(String email, String password) async {
-    // Add driver registration logic here
-  }
 }
 

@@ -3,9 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:lifts_app/home_page.dart';
 import 'package:lifts_app/pages/home.dart';
 import 'package:lifts_app/pages/onboarding/registration_screen.dart';
 import 'package:lifts_app/pages/onboarding/reset_password.dart';
@@ -15,6 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 
 import '../../model/user_model.dart';
+import '../widgets/social_button.dart';
 
 Color primary = Color(0xff072227);
 Color secondary = Color(0xff35858B);
@@ -32,8 +30,10 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+
+
+  //I'M INITIALIZING MY FIREBASE AUTH SERVICE, TO GAIN ACCESS TO ALL MY AUTHENTICATION RELATED CODE.
   final FirebaseAuthService service = FirebaseAuthService();
 
   bool _isLoading = false;
@@ -62,37 +62,19 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
       setState(() {
         _isLoading = true;
       });
-      try {
-        UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
-        UserModel userModel = UserModel.fromDocument(userDoc);
-        Fluttertoast.showToast(
-            msg: "Login Successful!!",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.CENTER,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-        );
+      UserModel? userModel = await service.signIn(email, password);
+      if (userModel != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home'
-          ,userModel: userModel,)),
+          MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home', userModel: userModel)),
         );
-      } catch (e) {
-        Fluttertoast.showToast(
-            msg: 'Failed to sign in.',
-             toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.CENTER,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
       }
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+
 
 
   @override
@@ -170,6 +152,7 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
       child: MaterialButton(
         onPressed: () {
           signIn(emailController.text, passwordController.text);
+          // signIn(emailController.text, passwordController.text);
         },
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
@@ -281,6 +264,7 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
                       children: [
                         const SizedBox(width: 28),
                         _socialsSignInButtons(_signInWithGoogle),
+                        // SocialWidget(onPressed: () {_signInWithGoogle;  },),
                         const SizedBox(width: 10),
                       ],
                     ),
@@ -296,7 +280,6 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
   }
 
   void _signInWithGoogle() async {
-
     try {
       User? user = await service.signInWithGoogle();
 
@@ -325,6 +308,8 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
     }
 
   }
+
+//TO BE MOVED!!
   Widget _socialsSignInButtons(signInWithGoogle) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -352,63 +337,8 @@ class _LoginScreenState extends State<login_screen> with SingleTickerProviderSta
           ),
         ),
         const SizedBox(width: 20),
-        // Apple Button
-        // Container(
-        //   height: 60,
-        //   width: 60,
-        //   padding: const EdgeInsets.all(15),
-        //   decoration: const BoxDecoration(
-        //     color: AppColors.buttonColor,
-        //     borderRadius: BorderRadius.all(
-        //       Radius.circular(20),
-        //     ),
-        //   ),
-        //   child: SvgPicture.asset(
-        //     'assets/icons/apple_logo.svg',
-        //     height: 5,
-        //     width: 5,
-        //   ),
-        // ),
       ],
     );
   }
 
-
-  Future<User?> signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    try {
-      await googleSignIn.signOut(); // Signing out any existing user before signing in
-
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        UserCredential userCredential = await _auth.signInWithCredential(credential);
-
-        String uid = userCredential.user!.uid;
-        DocumentSnapshot doc = await _firestore.collection("users").doc(uid).get();
-
-        if (!doc.exists) {
-          await _firestore.collection("users").doc(uid).set({
-            "uid": uid,
-            "name": googleUser.displayName,
-            "email": googleUser.email,
-            "profilePhoto": googleUser.photoUrl ?? AppValues.defaultUserImg,
-            "cash": 0.0,
-          });
-        }
-      }
-
-      return _auth.currentUser;
-    } catch (e) {
-      throw Exception('An error occurred while signing in with Google.');
-    }
-  }
 }

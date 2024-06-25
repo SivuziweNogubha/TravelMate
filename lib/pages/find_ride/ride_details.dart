@@ -208,10 +208,8 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
       final PictureRecorder pictureRecorder = PictureRecorder();
       final Canvas canvas = Canvas(pictureRecorder);
 
-      // Define the paint for the rectangular box
       final Paint boxPaint = Paint()..color = Colors.black;
 
-      // Define the text painter to measure and draw the label text
       TextPainter textPainter = TextPainter(
         textDirection: TextDirection.ltr,
       );
@@ -224,18 +222,15 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
       );
       textPainter.layout();
 
-      // Calculate the width and height based on the text
       final double textWidth = textPainter.width;
       final double textHeight = textPainter.height;
       final double padding = 20.0;
       final double width = textWidth + padding * 2;
       final double height = textHeight + padding;
 
-      // Draw the rectangular box with dynamic size
       final Rect boxRect = Rect.fromLTRB(0, 0, width, height);
       canvas.drawRect(boxRect, boxPaint);
 
-      // Draw the label text in the center of the box
       final double textOffsetX = padding;
       final double textOffsetY = (height - textHeight) / 2;
       textPainter.paint(canvas, Offset(textOffsetX, textOffsetY));
@@ -423,7 +418,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                         child: Image.network(
                                           widget.offeredByPhotoUrl,
                                           fit: BoxFit
-                                              .contain, // Ensure the image fits perfectly within the CircleAvatar
+                                              .contain,
                                         ),
                                       ),
                                     ),
@@ -439,7 +434,6 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                             fontSize: 22,
                                             fontWeight: FontWeight.bold,
                                             decoration: TextDecoration.none,
-                                            fontFamily: 'Aeonik',
                                           ),
                                         ),
                                         const SizedBox(height: 5),
@@ -449,7 +443,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                           decoration: const BoxDecoration(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(4)),
-                                            color: Colors.green,
+                                            color: Colors.blue,
                                           ),
                                           child: const Text(
                                             "Available",
@@ -458,7 +452,6 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                               fontSize: 16,
                                               fontWeight: FontWeight.normal,
                                               decoration: TextDecoration.none,
-                                              fontFamily: 'Aeonik',
                                             ),
                                           ),
                                         ),

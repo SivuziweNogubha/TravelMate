@@ -17,29 +17,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final FirebaseAuthService service = FirebaseAuthService();
 
 
-  //NEED TO MOVE THIS LOGIC TO THE AUTHORISATION CLASS
-  // Future<void> _resetPassword() async {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (BuildContext context) {
-  //       return CustomLoadingAnimation(animationPath: 'assets/animations/loading.json');
-  //     },
-  //   );
-  //
-  //   // Simulate a delay of 2 seconds
-  //   await Future.delayed(Duration(seconds: 2));
-  //     try {
-  //       await service.resetPassword(_emailController.text);
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Password reset email sent')),
-  //       );
-  //     } catch (e) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Failed to send password reset email: $e')),
-  //       );
-  //   }
-  // }
 
   Future<void> _resetPassword() async {
     showDialog(
@@ -50,7 +27,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           },
     );
 
-    // Simulate a delay of 2 seconds
     await Future.delayed(Duration(seconds: 2));
 
     try {
@@ -64,7 +40,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
     }
 
-    // Dismiss the loading dialog after the delay
     Navigator.of(context).pop();
   }
 

@@ -28,75 +28,30 @@ class FindRideTab extends StatefulWidget {
 }
 
 class _FindRideTabState extends State<FindRideTab> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _destinationController = TextEditingController();
   DateTime? _dateTime;
   List<DocumentSnapshot>? _searchResults;
   bool _isLoading = false;
-  late GoogleMapController _googleMapController;
   TextEditingController _dateController = TextEditingController();
-  Position? _currentPosition;
 
   final _liftsRepository = LiftsRepository();
   final GoogleMapsService _mapsService = GoogleMapsService();
 
 
-  static const _initialCameraPosition = CameraPosition(
-    target: LatLng(-26.232590, 28.240967),
-    zoom: 14.4746,
-  );
-
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
     _mapsService.getCurrentLocation();
 
   }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      setState(() {
-        _currentPosition = position;
-      });
-    } catch (e) {
-      print('Error getting current location: $e');
-    }
-  }
+
 
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // _currentPosition != null
-        //     ? GoogleMap(
-        //   initialCameraPosition: CameraPosition(
-        //     target: LatLng(
-        //       _currentPosition!.latitude,
-        //       _currentPosition!.longitude,
-        //     ),
-        //     zoom: 15,
-        //   ),
-        //   onMapCreated: (GoogleMapController controller) {
-        //     _googleMapController = controller;
-        //   },
-        // )
-        //     : const Center(
-        //   child: CircularProgressIndicator(),
-        // ),
-        // Positioned.fill(
-        //   child: BackdropFilter(
-        //     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-        //     child: Container(
-        //       color: Colors.black.withOpacity(0.3),
-        //     ),
-        //   ),
-        // ),
-
         Positioned.fill(
           child: ImageFiltered(
             imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -256,32 +211,7 @@ class _FindRideTabState extends State<FindRideTab> {
                                     ),
                                   ),
                                   onTap: () async {
-                                    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(ride['offeredBy']).get();
-
-                                    if (userSnapshot.exists) {
-                                      Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
-
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => ConfirmRidePage(
-                                            departureLocation: LatLng(ride['departureLat'], ride['departureLng']),
-                                            destinationLocation: LatLng(ride['destinationLat'], ride['destinationLng']),
-                                            offeredBy: ride['offeredBy'],
-                                            offeredByName: userData['name'],
-                                            offeredByPhotoUrl: userData['photoURL'],
-                                            destination: ride['destinationLocation'],
-                                            departure: ride['departureLocation'],
-                                            price: ride['price'] as double,
-                                            liftId: ride['liftId'],
-                                            image: ride['destinationImage'],
-                                            seat: ride['availableSeats'],
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      // Handle case where user data is not found
-                                      print('User data not found');
-                                    }
+                                    await confirm_ride(context, ride);
                                   },
 
                                 // },
@@ -299,6 +229,35 @@ class _FindRideTabState extends State<FindRideTab> {
         ),
       ],
     );
+  }
+
+  Future<void> confirm_ride(BuildContext context, Map<String, dynamic> ride) async {
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(ride['offeredBy']).get();
+
+    if (userSnapshot.exists) {
+      Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ConfirmRidePage(
+            departureLocation: LatLng(ride['departureLat'], ride['departureLng']),
+            destinationLocation: LatLng(ride['destinationLat'], ride['destinationLng']),
+            offeredBy: ride['offeredBy'],
+            offeredByName: userData['name'],
+            offeredByPhotoUrl: userData['photoURL'],
+            destination: ride['destinationLocation'],
+            departure: ride['departureLocation'],
+            price: ride['price'] as double,
+            liftId: ride['liftId'],
+            image: ride['destinationImage'],
+            seat: ride['availableSeats'],
+          ),
+        ),
+      );
+    } else {
+      // Handle case where user data is not found
+      print('User data not found');
+    }
   }
 
 

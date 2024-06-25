@@ -25,7 +25,7 @@ PreferredSizeWidget defaultAppBar(BuildContext context, String? screenName) {
             fontSize: 20,
             fontWeight: FontWeight.w500,
             decoration: TextDecoration.none,
-            fontFamily: 'Aeonik',
+            // fontFamily: 'Aeonik',
           ),
         ),
         const SizedBox(width: 8),

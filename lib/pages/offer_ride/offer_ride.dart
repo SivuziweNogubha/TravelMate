@@ -334,28 +334,26 @@
 // }
 
 
-
-import 'dart:ffi';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
-import 'package:google_places_flutter/model/prediction.dart';
 import 'package:lifts_app/src/google_maps_service.dart';
 import '../../model/lift.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../utils/important_constants.dart';
+import '../widgets/Seats_and_price_widgets.dart';
 import '../widgets/loading_animation.dart';
+import '../widgets/location_widget.dart';
+import '../widgets/offering_ride_button.dart';
 
 class OfferRideTab extends StatefulWidget {
   @override
   _OfferRideTabState createState() => _OfferRideTabState();
 }
+
 
 class _OfferRideTabState extends State<OfferRideTab> {
   final _formKey = GlobalKey<FormState>();
@@ -373,22 +371,8 @@ class _OfferRideTabState extends State<OfferRideTab> {
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
-  }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      setState(() {
-        _currentPosition = position;
-      });
-    } catch (e) {
-      print('Error getting current location: $e');
-    }
   }
-
   Future<void> _offerRide() async {
     if (_formKey.currentState!.validate()) {
 
@@ -461,7 +445,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
       }
     }
   }
-
   void _resetForm() {
     _departureLocationController.clear();
     _destinationController.clear();
@@ -486,7 +469,6 @@ class _OfferRideTabState extends State<OfferRideTab> {
             ),
           ),
         ),
-        // Optional overlay to adjust brightness/contrast
         Positioned.fill(
           child: Container(
             color: Colors.black.withOpacity(0.2),
@@ -516,7 +498,12 @@ class _OfferRideTabState extends State<OfferRideTab> {
                   children: [
 
                     SizedBox(height: 16.0),
-                    _location(
+                    // _location(
+                    //   icon: 'assets/destination_location.png',
+                    // ),
+                    LocationWidget(
+                      departureController: _departureLocationController,
+                      destinationController: _destinationController,
                       icon: 'assets/destination_location.png',
                     ),
                     SizedBox(height: 16.0),
@@ -524,9 +511,9 @@ class _OfferRideTabState extends State<OfferRideTab> {
                     SizedBox(height: 16.0),
                     _buildDateTimePicker(),
                     SizedBox(height: 16.0),
-                    _buildSeatsAndPriceRow(),
+                    SeatsAndPriceRowWidget(priceController: _priceController, availableSeats: _availableSeats,),
                     SizedBox(height: 16.0),
-                    _buildOfferRideButton(),
+                    OfferRideButtonWidget(onPressed: () { _offerRide(); },),
                   ],
                 ),
               ),
@@ -537,117 +524,7 @@ class _OfferRideTabState extends State<OfferRideTab> {
     );
   }
 
-  Widget _buildAutoCompleteTextField({
-    required TextEditingController controller,
-    required String hintText,
-    required String icon,
-  }) {
-    return GooglePlaceAutoCompleteTextField(
-      textStyle: TextStyle(color: Colors.white),
-      textEditingController: controller,
-      googleAPIKey: dotenv.env['GOOGLE_CLOUD_MAP_ID']!,
-      inputDecoration: InputDecoration(
-        prefixIcon: ImageIcon(
-          AssetImage(icon),
-          size: 24,
-          color: Colors.white,
-        ),
-        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: hintText,
-        hintStyle: TextStyle(color: Colors.white),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      countries: ["za"],
-      isLatLngRequired: true,
-      getPlaceDetailWithLatLng: (prediction) {
-        print("placeDetails: ${prediction.lng}");
-      },
-      itemClick: (prediction) {
-        controller.text = prediction.description!;
-      },
-      itemBuilder: (context, index, Prediction prediction) => _buildPredictionItem(context, prediction, controller),
-    );
-  }
 
-  Widget _buildPredictionItem(BuildContext context, Prediction prediction, TextEditingController controller) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            controller.text = prediction.description!;
-            // Close the suggestions - you might need to implement this based on the package's capabilities
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Row(
-              children: [
-                SvgPicture.asset("assets/icons/location_icon.svg", height: 24),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        prediction.structuredFormatting?.mainText ?? prediction.description!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        prediction.structuredFormatting?.secondaryText ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.highlightColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Divider(color: AppColors.enabledBorderColor, thickness: 1),
-      ],
-    );
-  }
-
-  Widget _location({ required String icon}){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SvgPicture.asset(
-          'assets/uber_line.svg',
-          height: 70,
-          // color: Colors.black,
-        ),
-        const SizedBox(width: 18),
-        Expanded(
-          child: Column(
-            children: [
-              _buildAutoCompleteTextField(controller: _departureLocationController, hintText: "Your Location?", icon: icon),
-              const SizedBox(height: 7),
-              _buildAutoCompleteTextField(controller: _destinationController, hintText: "Where to?", icon: icon),
-
-            ],
-          ),
-        )
-      ],
-    );
-  }
 
   Widget _buildDateTimePicker() {
     return TextField(
@@ -690,93 +567,5 @@ class _OfferRideTabState extends State<OfferRideTab> {
     );
   }
 
-  Widget _buildSeatsAndPriceRow() {
-    return Row(
-      children: [
-        Image.asset(
-          'assets/icons/seats.png',
-          width: 44,
-          height: 44,
-          color: Colors.white,
-        ),
-        SizedBox(width: 16.0),
-        DropdownButton<int>(
-          value: _availableSeats,
-          onChanged: (value) {
-            if (value != null) {
-              setState(() {
-                _availableSeats = value;
-              });
-            }
-          },
-          items: List.generate(
-            3,
-                (index) => DropdownMenuItem(
-
-              value: index + 1,
-              child: Container(color:Colors.black,child: Text('${index + 1}',style: TextStyle(color: Colors.white),)),
-
-            ),
-          ),
-        ),
-        SizedBox(width: 16.0), // Add spacing between seats and price
-        Expanded(
-          child: TextFormField(
-            style: TextStyle(color: Colors.white),
-            controller: _priceController,
-            decoration: InputDecoration(
-              labelText: 'Price',
-              labelStyle: TextStyle(color: Colors.white),
-              prefixIcon: ImageIcon(
-                AssetImage('assets/icons/rands.png'),
-                color: Colors.white,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter a price';
-              }
-              if (double.tryParse(value) == null) {
-                return 'Please enter a valid number';
-              }
-              return null;
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-
-  Widget _buildOfferRideButton() {
-    return Positioned(
-      bottom: 16.0,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: ElevatedButton.icon(
-          onPressed: _offerRide,
-          icon: ImageIcon(
-            AssetImage('assets/icons/car_passengers.png'),
-            color: Colors.white, // Set the icon color to white
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black, // Set the button background color to black
-            side: BorderSide(color: Colors.blueGrey, width: 2), // Bluish outline
-          ),
-          label: Text(
-            'Offer Ride',
-            style: TextStyle(color: Colors.white), // Set the text color to white
-          ),
-        ),
-      ),
-    );
-  }
-  
-  
 
 }

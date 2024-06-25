@@ -1,183 +1,143 @@
-// // import 'package:firebase_auth/firebase_auth.dart';
-// // import 'package:flutter/material.dart';
-// //
-// // import '../repository/wallet_repo.dart';
-// //
-// // class WalletPage extends StatefulWidget {
-// //   @override
-// //   _WalletPageState createState() => _WalletPageState();
-// // }
-// //
-// // class _WalletPageState extends State<WalletPage> {
-// //   final WalletRepository _walletRepository = WalletRepository();
-// //   double _balance = 0.0;
-// //
-// //   @override
-// //   void initState() {
-// //     super.initState();
-// //     _fetchBalance();
-// //   }
-// //
-// //   Future<void> _fetchBalance() async {
-// //     String userId = FirebaseAuth.instance.currentUser!.uid;
-// //     double balance = await _walletRepository.getWalletBalance(userId);
-// //     setState(() {
-// //       _balance = balance;
-// //     });
-// //   }
-// //
-// //   Future<void> _addFunds(double amount) async {
-// //     String userId = FirebaseAuth.instance.currentUser!.uid;
-// //     await _walletRepository.updateWalletBalance(userId, amount);
-// //     _fetchBalance();
-// //   }
-// //
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Scaffold(
-// //       appBar: AppBar(title: Text('Wallet')),
-// //       body: Padding(
-// //         padding: const EdgeInsets.all(16.0),
-// //         child: Column(
-// //           crossAxisAlignment: CrossAxisAlignment.start,
-// //           children: [
-// //             Text('Balance: \R$_balance', style: TextStyle(fontSize: 24)),
-// //             SizedBox(height: 16.0),
-// //             ElevatedButton(
-// //               onPressed: () {
-// //                 // Implement fund addition logic
-// //                 _addFunds(50.0); // Example: add $50 to the wallet
-// //               },
-// //               child: Text('Add Funds'),
-// //             ),
-// //           ],
-// //         ),
-// //       ),
-// //     );
-// //   }
-// // }
-// import 'dart:convert';
-//
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:stripe_payment/stripe_payment.dart';
-// import 'package:http/http.dart' as http;
-// import '../repository/wallet_repo.dart';
-//
-// class WalletPage extends StatefulWidget {
-//   @override
-//   _WalletPageState createState() => _WalletPageState();
-// }
-//
-// class _WalletPageState extends State<WalletPage> {
-//   final WalletRepository _walletRepository = WalletRepository();
-//   double _balance = 0.0;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _fetchBalance();
-//     _initializeStripe();
-//   }
-//
-//   Future<void> _fetchBalance() async {
-//     String userId = FirebaseAuth.instance.currentUser!.uid;
-//     double balance = await _walletRepository.getWalletBalance(userId);
-//     setState(() {
-//       _balance = balance;
-//     });
-//   }
-//
-//   Future<void> _addFunds(double amount) async {
-//     String userId = FirebaseAuth.instance.currentUser!.uid;
-//     // Call your backend to create a payment intent and get the client secret
-//     String clientSecret = await _createPaymentIntent(amount);
-//     // Process the payment with Stripe
-//     await _processPayment(clientSecret);
-//     await _walletRepository.updateWalletBalance(userId, amount);
-//     _fetchBalance();
-//   }
-//
-//   Future<String> _createPaymentIntent(double amount) async {
-//     // Replace with your backend URL
-//     final String backendUrl = 'https://your-backend.com/create-payment-intent';
-//
-//     // Create the request payload
-//     Map<String, dynamic> requestPayload = {
-//       'amount': (amount * 100).toInt().toString(), // Stripe expects the amount in the smallest currency unit (e.g., cents)
-//     };
-//
-//     // Make the HTTP POST request
-//     final response = await http.post(
-//       Uri.parse(backendUrl),
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: json.encode(requestPayload),
-//     );
-//
-//     // Check if the request was successful
-//     if (response.statusCode == 200) {
-//       // Parse the response body
-//       Map<String, dynamic> responseBody = json.decode(response.body);
-//
-//       // Return the client secret from the response
-//       return responseBody['client_secret'];
-//     } else {
-//       // Handle error
-//       throw Exception('Failed to create payment intent');
-//     }
-//   }
-//
-//
-//
-//   Future<void> _processPayment(String clientSecret) async {
-//     try {
-//       PaymentMethod paymentMethod = await StripePayment.paymentRequestWithCardForm(
-//         CardFormPaymentRequest(),
-//       );
-//       await StripePayment.confirmPaymentIntent(
-//         PaymentIntent(
-//           clientSecret: clientSecret,
-//           paymentMethodId: paymentMethod.id,
-//         ),
-//       );
-//     } catch (e) {
-//       // Handle payment errors
-//       print('Payment failed: $e');
-//     }
-//   }
-//
-//   void _initializeStripe() {
-//     StripePayment.setOptions(
-//       StripeOptions(
-//         publishableKey: 'your_publishable_key',
-//         merchantId: 'your_merchant_id',
-//         androidPayMode: 'test', // or 'production'
-//       ),
-//     );
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text('Wallet')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text('Balance: \$$_balance', style: TextStyle(fontSize: 24)),
-//             SizedBox(height: 16.0),
-//             ElevatedButton(
-//               onPressed: () {
-//                 _addFunds(50.0); // Example: add $50 to the wallet
-//               },
-//               child: Text('Add Funds'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lifts_app/pages/widgets/loading_animation.dart';
+import 'package:lifts_app/repository/wallet_repo.dart';
+import 'package:lifts_app/utils/important_constants.dart';
+
+import '../main.dart';
+
+class WalletPage extends StatefulWidget {
+  @override
+  _WalletPageState createState() => _WalletPageState();
+}
+
+class _WalletPageState extends State<WalletPage> {
+  final WalletRepository _walletRepository = WalletRepository();
+  double _balance = 0.0;
+  TextEditingController _amountController = TextEditingController();
+  bool _isLoading = false; // Track loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBalance();
+  }
+
+  Future<void> _fetchBalance() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    double balance = await _walletRepository.getWalletBalance(userId);
+    setState(() {
+      _balance = balance;
+    });
+  }
+
+  Future<void> _addFunds() async {
+    double amount = double.tryParse(_amountController.text) ?? 0.0;
+    if (amount <= 0) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    await _walletRepository.updateWalletBalance(userId, amount);
+    _fetchBalance();
+    _amountController.clear();
+
+    await Future.delayed(Duration(seconds: 3));
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    // Show a pop-up message indicating successful recharge
+    Fluttertoast.showToast(
+      msg: "Wallet successfully recharged!",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.green,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: ImageIcon(
+            AssetImage('assets/back.png'),
+            size: 50,
+            color: Colors.white,
+          ),
+          color: primary,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        backgroundColor: AppColors.backgroundColor,
+        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'My Wallet',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Image.asset(
+              'assets/icons/wallet.png',
+              width: 44,
+              height: 74,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Balance: \R$_balance', style: TextStyle(color:Colors.white,fontSize: 24,fontWeight: FontWeight.bold)),
+              SizedBox(height: 16.0),
+              TextField(
+                style: TextStyle(color: Colors.white),
+                controller: _amountController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                  labelText: 'Enter Amount',
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _addFunds, // Disable button while loading
+                child: _isLoading
+                    ? CustomLoadingAnimation(animationPath: 'assets/animations/loading.json')// Show loading indicator on button
+                    : Text('Add Funds'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose(); // Dispose the controller to avoid memory leaks
+    super.dispose();
+  }
+}

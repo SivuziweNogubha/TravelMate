@@ -22,7 +22,6 @@ class LiftOfferViewModel extends ChangeNotifier {
 
 
   }) async {
-    // Fetch the destination photo URL from the API
     String destinationImageUrl = await service.getDestinationPhotoUrl(destinationLocation);
 
     GeoPoint departureCoordinates = await service.getLocationCoordinates(departureLocation);

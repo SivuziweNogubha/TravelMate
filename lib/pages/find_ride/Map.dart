@@ -1,77 +1,12 @@
-// import 'package:flutter/material.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
-//
-// import '../../model/lift.dart';
-//
-// GoogleMap googleMap(
-//
-//
-//
-//     Lift lift,
-//     Set<Marker> markers,
-//     Set<Polyline> polylines,
-//     BoxConstraints constraints,
-//     ) {
-//   LatLng minLatLng(double lat1, double lng1, double lat2, double lng2) {
-//     return LatLng(
-//       lat1 < lat2 ? lat1 : lat2,
-//       lng1 < lng2 ? lng1 : lng2,
-//     );
-//   }
-//
-//   LatLng maxLatLng(double lat1, double lng1, double lat2, double lng2) {
-//     return LatLng(
-//       lat1 > lat2 ? lat1 : lat2,
-//       lng1 > lng2 ? lng1 : lng2,
-//     );
-//   }
-//
-//   LatLngBounds bounds = LatLngBounds(
-//     southwest: minLatLng(
-//       lift.departureLat,
-//       lift.departureLng,
-//       lift.destinationLat,
-//       lift.destinationLng,
-//     ),
-//     northeast: maxLatLng(
-//       lift.departureLat,
-//       lift.departureLng,
-//       lift.destinationLat,
-//       lift.destinationLng,
-//     ),
-//   );
-//
-//   LatLng center = LatLng(
-//     bounds.southwest.latitude + (bounds.northeast.latitude - bounds.southwest.latitude) / 2,
-//     bounds.southwest.longitude + (bounds.northeast.longitude - bounds.southwest.longitude) / 2,
-//   );
-//
-//   double zoomLevel = 10.4;
-//   if (constraints.maxHeight > 500) {
-//     zoomLevel = 14.0;
-//   } else if (constraints.maxHeight > 300) {
-//     zoomLevel =5.0;
-//   }
-//
-//   return GoogleMap(
-//     mapType: MapType.normal,
-//     cloudMapId: dotenv.get("GOOGLE_CLOUD_MAP_ID"),
-//     zoomControlsEnabled: false,
-//     myLocationButtonEnabled: true,
-//     initialCameraPosition: CameraPosition(
-//       target: center,
-//       zoom: zoomLevel,
-//     ),
-//     markers: markers,
-//     polylines: polylines,
-//   );
-// }
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../model/lift.dart';
+
+import 'dart:math' as math;
 
 GoogleMap googleMap(
     Lift lift,
@@ -81,92 +16,74 @@ GoogleMap googleMap(
     GoogleMapController? mapController,
     String? mapStyle,
     ) {
-  LatLng minLatLng(double lat1, double lng1, double lat2, double lng2) {
-    return LatLng(
-      lat1 < lat2 ? lat1 : lat2,
-      lng1 < lng2 ? lng1 : lng2,
-    );
+  double normalizeLng(double lng) {
+    lng = (lng + 180) % 360 - 180;
+    return lng == -180 ? 180 : lng;
   }
 
-  LatLng maxLatLng(double lat1, double lng1, double lat2, double lng2) {
-    return LatLng(
-      lat1 > lat2 ? lat1 : lat2,
-      lng1 > lng2 ? lng1 : lng2,
-    );
+  double departureLng = normalizeLng(lift.departureLng);
+  double destinationLng = normalizeLng(lift.destinationLng);
+  //IM ATTEMPTING TO MAKE THE MAP'S ZOOM ALWAYS FIT THE TOP PART OF THE SCREEN
+  //ALLOWING THE USER TO SEE THE WAYPOINT BETWEEN THE 2 LOCATIONS
+  double minLat = math.min(lift.departureLat, lift.destinationLat);
+  double maxLat = math.max(lift.departureLat, lift.destinationLat);
+
+
+  double lngDiff = (destinationLng - departureLng).abs();
+  double minLng, maxLng;
+  if (lngDiff > 180) {
+    minLng = math.max(departureLng, destinationLng);
+    maxLng = math.min(departureLng, destinationLng);
+  } else {
+    minLng = math.min(departureLng, destinationLng);
+    maxLng = math.max(departureLng, destinationLng);
   }
+
+
+  double latPadding = math.max((maxLat - minLat) * 0.1, 0.1);
+  double lngPadding = math.max((maxLng - minLng) * 0.1, 0.1);
 
   LatLngBounds bounds = LatLngBounds(
-    southwest: minLatLng(
-      lift.departureLat,
-      lift.departureLng,
-      lift.destinationLat,
-      lift.destinationLng,
+    southwest: LatLng(
+      math.max(minLat - latPadding, -90),
+      normalizeLng(minLng - lngPadding),
     ),
-    northeast: maxLatLng(
-      lift.departureLat,
-      lift.departureLng,
-      lift.destinationLat,
-      lift.destinationLng,
+    northeast: LatLng(
+      math.min(maxLat + latPadding, 90),
+      normalizeLng(maxLng + lngPadding),
     ),
   );
 
-  if (bounds.southwest.latitude <= bounds.northeast.latitude) {
-    LatLng center = LatLng(
-      bounds.southwest.latitude +
-          (bounds.northeast.latitude - bounds.southwest.latitude) / 2,
-      bounds.southwest.longitude +
-          (bounds.northeast.longitude - bounds.southwest.longitude) / 2,
-    );
-
-    double zoomLevel = 10.4;
-    if (constraints.maxHeight > 500) {
-      zoomLevel = 8.0;
-    } else if (constraints.maxHeight > 300) {
-      zoomLevel = 5.0;
-    }
-
-    return GoogleMap(
-      mapType: MapType.normal,
-      cloudMapId: dotenv.get("GOOGLE_CLOUD_MAP_ID"),
-      zoomControlsEnabled: false,
-      myLocationButtonEnabled: true,
-      initialCameraPosition: CameraPosition(
-        target: center,
-        zoom: zoomLevel,
-      ),
-      markers: markers,
-      polylines: polylines,
-      style: mapStyle,
-    );
-  } else {
-    // Handle the case where southwest latitude is greater than northeast latitude
-    // For example, you can swap the latitude values and recalculate the center
-    LatLng center = LatLng(
-      bounds.northeast.latitude +
-          (bounds.southwest.latitude - bounds.northeast.latitude) / 2,
-      bounds.southwest.longitude +
-          (bounds.northeast.longitude - bounds.southwest.longitude) / 2,
-    );
-
-    double zoomLevel = 10.4;
-    if (constraints.maxHeight > 500) {
-      zoomLevel = 14.0;
-    } else if (constraints.maxHeight > 300) {
-      zoomLevel = 5.0;
-    }
-
-    return GoogleMap(
-      mapType: MapType.normal,
-      cloudMapId: dotenv.get("GOOGLE_CLOUD_MAP_ID"),
-      zoomControlsEnabled: false,
-      myLocationButtonEnabled: true,
-      initialCameraPosition: CameraPosition(
-        target: center,
-        zoom: zoomLevel,
-      ),
-      markers: markers,
-      polylines: polylines,
-      style: mapStyle,
-    );
+  if (mapController != null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      mapController?.animateCamera(
+        CameraUpdate.newLatLngBounds(
+          bounds,
+          50.0,
+        ),
+      );
+    });
   }
+
+  return GoogleMap(
+    mapType: MapType.normal,
+    initialCameraPosition: CameraPosition(
+      target: LatLng(lift.departureLat, lift.departureLng),
+      zoom: 10.0,
+    ),
+    onMapCreated: (GoogleMapController controller) {
+      mapController = controller;
+      controller.setMapStyle(mapStyle);
+      controller.animateCamera(
+        CameraUpdate.newLatLngBounds(
+          bounds,
+          50.0,
+        ),
+      );
+    },
+    markers: markers,
+    polylines: polylines,
+    zoomControlsEnabled: false,
+    myLocationButtonEnabled: true,
+  );
 }

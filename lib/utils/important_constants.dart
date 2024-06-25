@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+
+//MY APP COLORS
 class AppColors {
   static const Color gradientColor1 = Color(0xFF00E6FF);
   static const Color gradientColor2 = Color(0xFF1201FF);

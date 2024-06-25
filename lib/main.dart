@@ -60,10 +60,6 @@ Future<void> main() async {
         Provider<LiftsRepository>( // Provide LiftsRepository
           create: (context) => LiftsRepository(),
         ),
-        // ChangeNotifierProvider( // Inject LiftsRepository into LiftsViewModel
-        //   create: (context) => viewnodel.LiftsViewModel(Provider.of<LiftsRepository>(context)),
-        //
-        // ),
         if (userId != null)
           ChangeNotifierProvider(create: (_) => ProfileViewModel(userId)),
         ChangeNotifierProvider(create: (_) => UserProvider()),

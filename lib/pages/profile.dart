@@ -834,17 +834,15 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifts_app/model/user_provider.dart';
 import 'package:lifts_app/pages/onboarding/reset_password.dart';
+import 'package:lifts_app/repository/lifts_repository.dart';
+import 'package:lifts_app/view_models/ride_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:lifts_app/view_models/profile_view_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart'; // Add this import for Google Maps
-import 'package:lottie/lottie.dart'; // Import Lottie for animations
 
 import '../utils/important_constants.dart';
 import 'onboarding/login_screen.dart';
@@ -876,28 +874,10 @@ class ProfilePageContent extends StatefulWidget {
 class _ProfilePageContentState extends State<ProfilePageContent> {
   File? _imageFile;
   final picker = ImagePicker();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Position? _currentPosition;
-  late GoogleMapController _googleMapController;
-
-  Future<void> _getCurrentLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      setState(() {
-        _currentPosition = position;
-      });
-    } catch (e) {
-      print('Error getting current location: $e');
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
   }
 
   Future<void> _uploadImage() async {
@@ -909,15 +889,12 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
         _imageFile = File(pickedFile.path);
       });
 
-      // Upload the image to Firebase Storage
-      print('User UID: ${widget.uid}');
 
       // My storage Bucket at firestore
       Reference storageReference = FirebaseStorage.instance
           .refFromURL('gs://e-hailing-94d2c.appspot.com')
           .child('profile_images/${widget.uid}');
 
-      print('Storage reference path: ${storageReference.fullPath}');
 
       UploadTask uploadTask = storageReference.putFile(_imageFile!);
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
@@ -970,7 +947,8 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final user = userProvider.user;
+    // final user = userProvider.user;
+   final LiftsRepository repository = LiftsRepository();
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -991,7 +969,7 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
               ),
             ),
             StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance.collection('users').doc(widget.uid).snapshots(),
+              stream: repository.getUserStream(widget.uid),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
@@ -1219,9 +1197,9 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                           right: 8,
                           child: GestureDetector(
                             onTap: () {
-                              // Navigator.of(context).push(
-                              //   MaterialPageRoute(builder: (context) => WalletPage()),
-                              // );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => WalletPage()),
+                              );
                             },
                             child: ImageIcon(
                               AssetImage('assets/icons/wallet.png'),

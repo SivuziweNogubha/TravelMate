@@ -215,7 +215,6 @@ class OfferedRidesViewState extends State<OfferedRidesView> {
   @override
   void initState() {
     super.initState();
-    // Simulate loading for at least 3 seconds
     Future.delayed(Duration(seconds: 3), () {
       if (mounted) {
         setState(() {

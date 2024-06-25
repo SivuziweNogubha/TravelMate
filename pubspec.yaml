@@ -62,6 +62,9 @@ dependencies:
   flutter_datetime_picker: ^1.5.1
   flutter_local_notifications: ^17.1.2
   firebase_messaging: ^14.9.4
+  build_runner: ^2.4.9
+  mockito: ^5.4.4
+#  test: ^1.24.9
 #  flushbar: ^1.5.0
 #  stripe_payment: ^1.1.4
 #  flutter_stripe: ^10.1.1
@@ -77,6 +80,7 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  test: ^1.24.9
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
