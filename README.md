@@ -20,12 +20,11 @@ Explanation:
 - `providers`: Contains provider classes for managing state.
 - `services`: Handles external services like Firebase, Google Maps, SendGrid.
 - `ui`: Contains UI-related components, organized by screens and functionality.
-    - `screens`: Divided into sub-folders based on the user journey or feature.
+    - `pages`: Divided into sub-folders based on the user journey or feature.
     - `widgets`: Reusable widgets used across multiple screens.
 - `utils`: Contains utility classes and constants used throughout the app
 - `viewmodels`: Manages the application's logic, following the MVVM pattern.
 - `firebase_options.dart`: Contains Firebase configuration options.
-- `main.dart`: The entry point of the application
 
 
 ## Getting Started
