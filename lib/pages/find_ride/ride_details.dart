@@ -408,9 +408,7 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                   children: [
                                     CircleAvatar(
                                       radius: 40,
-                                      // Adjust the radius as needed for the desired size
                                       backgroundColor: Colors.grey[300],
-                                      // Optional background color for the avatar
                                       backgroundImage: NetworkImage(
                                         widget.offeredByPhotoUrl,
                                       ),
@@ -422,6 +420,23 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
                                         ),
                                       ),
                                     ),
+                                    // CircleAvatar(
+                                    //   radius: 40,
+                                    //   backgroundColor: Colors.grey[300],
+                                    //   backgroundImage: widget.offeredByPhotoUrl != null && widget.offeredByPhotoUrl.isNotEmpty
+                                    //       ? NetworkImage(widget.offeredByPhotoUrl)
+                                    //       : null,
+                                    //   child: widget.offeredByPhotoUrl == null || widget.offeredByPhotoUrl.isEmpty
+                                    //       ? ClipOval(
+                                    //     child: Image.asset(
+                                    //       'assets/icons/camera.png',
+                                    //       fit: BoxFit.contain,
+                                    //     ),
+                                    //   )
+                                    //       : null,
+                                    // ),
+
+
                                     const SizedBox(width: 10),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment
